@@ -203,10 +203,10 @@ TGraph* DFTmethod::GetGraphN( Int_t n )
       Double_t amp_SG = sqrt( pow( wfoutSG[i][0], 2.0 )+pow( wfoutSG[i][1], 2.0 ) );
       Double_t ph_SG = fftPhase( wfoutSG[i][1], wfoutSG[i][0] );
             
-      double ph = ( ph_BG + 1.0*n*ph_SG*step );
+      double ph = ( ph_BG + 1.0*n*ph_SG );
       
-      wfout[i][0] = amp_BG*pow( amp_SG, 1.0*n*1.0 )*TMath::Cos( ph );
-      wfout[i][1] = amp_BG*pow( amp_SG, 1.0*n*1.0 )*TMath::Sin( ph );
+      wfout[i][0] = amp_BG*pow( step*amp_SG, 1.0*n*1.0 )*TMath::Cos( ph );
+      wfout[i][1] = amp_BG*pow( step*amp_SG, 1.0*n*1.0 )*TMath::Sin( ph );
       
     }
   
@@ -246,22 +246,14 @@ Double_t DFTmethod::fftPhase( Double_t vy, Double_t vz )
   Double_t thetayz = -999.0;
   
   Double_t pi = TMath::Pi();
-  
-  
+    
   if ( vz>0 && vy>0 ) { Double_t ratio=TMath::Abs( vy/vz ); thetayz=TMath::ATan( ratio ); }
-
   else if ( vz<0 && vy>0 ) { Double_t ratio=TMath::Abs( vy/vz ); thetayz=TMath::ATan( ratio ); thetayz=pi-thetayz; }
-
   else if ( vz<0 && vy<0 ) { Double_t ratio=TMath::Abs( vy/vz ); thetayz=TMath::ATan( ratio ); thetayz=thetayz+pi; }
-
   else if ( vz>0 && vy<0 ) { Double_t ratio=TMath::Abs( vy/vz ); thetayz=TMath::ATan( ratio ); thetayz=2.0*pi-thetayz; }
-
   else if ( vz==0 && vy>0 ) { thetayz=pi/2.0; }
-
   else if ( vz==0 && vy<0 ) { thetayz=3.0*pi/2.0; }
-
   else if ( vz>0 && vy==0 ) { thetayz=0.0; }
-
   else if ( vz<0 && vy==0 ) { thetayz=pi; }
   
   thetayz = fmod( thetayz, 2.0*pi );
