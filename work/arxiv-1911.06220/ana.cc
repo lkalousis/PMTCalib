@@ -264,14 +264,18 @@ Int_t ana()
       Double_t Gfit = ( fit.vals[7]/fit.vals[6]+(1.0-fit.vals[7])/fit.vals[4] ); 
       cout << " BF Gain : " << Gfit  << endl;
       cout << "" << endl;
-      
-      h_g->Fill( Gfit );
-      h_chi2->Fill(fit.chi2r);
+
+      if ( fit.chi2r<3.0 )
+	{
+	  h_g->Fill( Gfit );
+	  h_chi2->Fill(fit.chi2r);
+
+	}
       
       /* ... */
             
-      c1->Update();
-      c1->WaitPrimitive();
+      //c1->Update();
+      //c1->WaitPrimitive();
       
       for ( Int_t i=0; i<npeaks; i++ ) delete grPE[i];
             
