@@ -1,7 +1,7 @@
 #
 # PMTCalib makefile
 # author : Leonidas N. Kalousis
-# e-mail : leonidas.kalousis@iphc.cnrs.be
+# e-mail : leonidas.kalousis@gmail.com
 #
 
 dict = PMTCalibDict
@@ -31,7 +31,7 @@ start	:
 	@rm -f ./#* ./*~ ./*.*~	
 	@rm -f ./src/#* ./src/*~ ./src/*.*~
 	@rm -f ./mac/#* ./mac/*~ ./mac/*.*~
-	@mkdir -p lib work
+	@mkdir -p lib
 
 $(dict).cc : 
 	@rootcling -f $(dict).cc -s $(lib) -rml $(lib) -rmf $(rootmap) $(incflags) -c $(head) LinkDef.h 

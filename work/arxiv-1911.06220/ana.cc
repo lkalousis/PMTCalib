@@ -270,8 +270,8 @@ Int_t ana()
       
       /* ... */
             
-      //c1->Update();
-      //c1->WaitPrimitive();
+      c1->Update();
+      c1->WaitPrimitive();
       
       for ( Int_t i=0; i<npeaks; i++ ) delete grPE[i];
             
