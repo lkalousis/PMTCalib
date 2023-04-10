@@ -180,9 +180,9 @@ void SPEFitter::FitwDFTmethod( TH1 *hspec )
   
   mFFT->SetFunction(FCA);
   
-  mFFT->SetLimitedVariable( 0, "Norm", dft.Norm, dft.Norm*0.01, dft.Norm*0.75, dft.Norm*1.25 );
-  mFFT->SetLimitedVariable( 1, "Q0", dft.Q0, TMath::Abs( dft.Q0 )*0.01+0.01, dft.Q0-0.5*dft.s0, dft.Q0+0.5*dft.s0 );
-  mFFT->SetLimitedVariable( 2, "s0", dft.s0, dft.s0*0.01, dft.s0*0.9, dft.s0*1.1 );
+  mFFT->SetLimitedVariable( 0, "Norm", dft.Norm, dft.Norm*0.01, dft.Norm*0.5, dft.Norm*1.5 ); // !!!
+  mFFT->SetLimitedVariable( 1, "Q0", dft.Q0, TMath::Abs( dft.Q0 )*0.01+0.001*dft.s0, dft.Q0-0.75*dft.s0, dft.Q0+0.75*dft.s0 );
+  mFFT->SetLimitedVariable( 2, "s0", dft.s0, dft.s0*0.01, dft.s0*0.5, dft.s0*1.5 );
   
   mFFT->SetLimitedVariable( 3, "mu", dft.mu, 0.01, dft.mu*0.5, dft.mu*2.0 );
   
