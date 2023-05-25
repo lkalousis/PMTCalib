@@ -169,7 +169,7 @@ void NumIntegration::CalculateValues()
 
       Double_t yy = TMath::Exp(-mu)*( yy0 ) +  gr_SR->Eval( xx );
       
-      for ( UInt_t j=nlim; j<35; j++ )
+      for ( UInt_t j=nlim; j<55; j++ )
 	{
 	  Double_t Qn = Q0 + 1.0*j*Qs;
 	  Double_t sn2 = pow( s0, 2.0 ) + 1.0*j*ss2;
