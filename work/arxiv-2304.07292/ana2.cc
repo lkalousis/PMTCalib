@@ -12,7 +12,9 @@
 
 #include "Pedestal.h"
 #include "SPEResponse.h"
+
 #include "PMT.h"
+#include "NumIntegration.h"
 
 #include "PMTModel.h"
 #include "SPEFitter.h"
@@ -210,15 +212,15 @@ Int_t project8()
       Double_t p_test[4] = {  g_test, 0.3*g_test, 1.0/(0.5*g_test), 0.2 }; 
             
       SPEResponse gauss_test( PMType::GAUSS, p_test ); 
-      DFTmethod dft( 2.0*nbins, xmin, xmax, gauss_test );
+      NumIntegration dft( 2.0*nbins, xmin, xmax, gauss_test );
       dft.wbin = hSG[run]->GetBinWidth(1);
       dft.Norm = hSG[run]->Integral();
       dft.Q0 = ped.Q0;
       dft.s0 = ped.s0;
       dft.mu = mu_test;
         
-      fit.SetDFTmethod( dft );
-      fit.FitwDFTmethod( hSG[run] );
+      fit.SetNummethod( dft );
+      fit.FitwNummethod( hSG[run] );
       
       dft.Norm = fit.vals[0];
   
@@ -271,21 +273,21 @@ Int_t project8()
       h_g->Fill( Gfit );
       h_chi2->Fill(fit.chi2r);
 
-      Int_t npeaks = 10;
-      TGraph *grPE[npeaks];
-      
+      //Int_t npeaks = 10;
+      //TGraph *grPE[npeaks];
+      /*
       for ( Int_t i=0; i<npeaks; i++ )
 	{
 	  grPE[i] = dft.GetGraphN( i );
 	  grPE[i]->Draw( "SAME,L" );
 	  
-	}
+	  }*/
       
       //while ( run==4 ) { c1->Update(); c1->WaitPrimitive(); }
       //c1->Update();
       //c1->WaitPrimitive();
       
-      for ( Int_t i=0; i<npeaks; i++ ) delete grPE[i];
+      //for ( Int_t i=0; i<npeaks; i++ ) delete grPE[i];
             
     }
 

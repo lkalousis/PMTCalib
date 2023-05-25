@@ -8,6 +8,7 @@
 #include "TH1.h"
 #include "TH1D.h"
 
+#include "NumIntegration.h"
 #include "DFTmethod.h"
 #include "PMTModel.h"
 
@@ -27,6 +28,8 @@ class SPEFitter : public TObject
 {
  private:
 
+  NumIntegration num;
+  
   DFTmethod dft;
   //ROOT::Minuit2::Minuit2Minimizer *mFFT;
     
@@ -41,6 +44,7 @@ class SPEFitter : public TObject
   
   virtual ~SPEFitter();
 
+  ROOT::Minuit2::Minuit2Minimizer *mNum;
   ROOT::Minuit2::Minuit2Minimizer *mFFT;
 
   
@@ -54,6 +58,9 @@ class SPEFitter : public TObject
 
   Double_t FindMu( TH1 *hspec, Double_t _Q0, Double_t _s0 );
   Double_t FindG( TH1 *hspec, Double_t _Q0, Double_t _mu );
+
+  void SetNummethod( NumIntegration _num );
+  void FitwNummethod( TH1 *hspec );
   
   void SetDFTmethod( DFTmethod _dft );
   void FitwDFTmethod( TH1 *hspec );

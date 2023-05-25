@@ -9,10 +9,47 @@ double yy0[7500];
 
 double wbin0;
 
+NumIntegration num0;
 DFTmethod dft0;
 PMTModel mod0;
 
 Int_t Nb;
+
+double fit_func_num( const double *x )
+{
+  double result = 0.0;
+
+  num0.wbin = wbin0;
+  
+  double Norm = x[0]; 
+  num0.Norm = Norm;
+  
+  double Q0 = x[1];
+  num0.Q0 = Q0;
+  double s0 = x[2];
+  num0.s0 = s0;
+  
+  double mu = x[3];
+  num0.mu = mu;
+    
+  double params0[20];
+  for( Int_t i=0; i<num0.spef.nparams; i++ ) params0[i] = x[i+4];
+  num0.spef.SetParams( params0 );
+  
+  num0.CalculateValues();
+
+  for ( Int_t i=0; i<N; i++ )
+    {
+      Double_t val = num0.GetValue( xx0[i] );
+      if ( val<1.0e-5 ) val = 1.0e-5;
+      
+      if ( yy0[i]>0 ) result += pow( val-yy0[i], 2.0 )/( yy0[i] );
+            
+    }
+  
+  return result;
+  
+}
 
 double fit_func_fft( const double *x )
 {
@@ -102,6 +139,14 @@ SPEFitter::SPEFitter()
 SPEFitter::~SPEFitter()
 {}
 
+void SPEFitter::SetNummethod( NumIntegration _num )
+{
+  num = _num;
+
+  num0 = _num;
+  
+}
+
 void SPEFitter::SetDFTmethod( DFTmethod _dft )
 {
   dft = _dft;
@@ -151,6 +196,110 @@ Double_t SPEFitter::FindG( TH1 *hspec, Double_t _Q0, Double_t _mu )
   
   return G;
   
+}
+
+void SPEFitter::FitwNummethod( TH1 *hspec )
+{
+  N = hspec->GetXaxis()->GetNbins();
+  wbin0 = hspec->GetXaxis()->GetBinWidth(1);
+
+  
+  fit_status=-1;
+  
+  Nb=0;
+  
+  for ( Int_t i=0; i<N; i++ )
+    {
+      xx0[i] = hspec->GetXaxis()->GetBinCenter( i+1 );
+      yy0[i] = hspec->GetBinContent( i+1 );
+
+      if ( yy0[i]>0 ) Nb++;
+      
+    }
+
+  
+  mNum = new ROOT::Minuit2::Minuit2Minimizer();
+  
+  ROOT::Math::Functor FCA;
+  FCA = ROOT::Math::Functor( &fit_func_num, num.spef.nparams+4 );
+  
+  mNum->SetFunction(FCA);
+  
+  mNum->SetLimitedVariable( 0, "Norm", num.Norm, num.Norm*0.01, num.Norm*0.75, num.Norm*1.25 ); // !!!
+  mNum->SetLimitedVariable( 1, "Q0", num.Q0, TMath::Abs( num.Q0 )*0.01+0.001*num.s0, num.Q0-0.5*num.s0, num.Q0+0.5*num.s0 );
+  mNum->SetLimitedVariable( 2, "s0", num.s0, num.s0*0.01, num.s0*0.5, num.s0*1.5 );
+  
+  mNum->SetLimitedVariable( 3, "mu", num.mu, 0.01, num.mu*0.5, num.mu*2.0 );
+  
+  mNum->SetLimitedVariable( 4, "PAR1", num.spef.params[0], num.spef.params[0]*0.001, num.spef.params[0]*0.3, num.spef.params[0]*3.0 );
+  mNum->SetLimitedVariable( 5, "PAR2", num.spef.params[1], num.spef.params[1]*0.001, num.spef.params[1]*0.1, num.spef.params[1]*8.0 );
+  mNum->SetLimitedVariable( 6, "PAR3", num.spef.params[2], num.spef.params[2]*0.001, num.spef.params[2]*0.01, num.spef.params[2]*5.0 );
+  mNum->SetLimitedVariable( 7, "PAR4", num.spef.params[3], 0.01, 0.0, 0.65 );
+  
+  
+  mNum->SetMaxFunctionCalls(1.E9);
+  mNum->SetMaxIterations(1.E9);
+  mNum->SetTolerance(0.01);
+  mNum->SetStrategy(2);
+  mNum->SetErrorDef(1.0);
+  mNum->Minimize();
+  mNum->Hesse();
+  
+  
+  Int_t ifits = 0;
+  while( mNum->Status()!=0 && ifits<4 )
+    { 
+      mNum->Minimize();
+      mNum->Hesse();
+      ifits++;
+      
+    }
+  
+  if( mNum->Status()!=0 )
+    {
+      cout << " * " << endl;
+      cout << " * The fit has failed ! " << endl;
+      cout << " * " << endl;
+      
+      return;
+
+    }
+
+  fit_status = mNum->Status();
+  
+  cout << " * " << endl;
+  cout << " * Minimization results "  << endl;
+  cout << " * " << endl;
+
+  cout << " * " << setw(10)  << "Calls" << " : " << mNum->NCalls() << endl;
+  cout << " * " << setw(10)  << "Status" << " : " << fit_status << endl;
+  cout << " * " << endl;
+    
+  Int_t ndim = mNum->NDim();
+  const double *pars = mNum->X();  
+  const double *erpars = mNum->Errors();
+    
+  for ( int i=0; i<ndim; i++ )
+    {
+      cout << " * " << setw(10)  << mNum->VariableName(i) << " : " << Form( "%.5f", pars[i] ) << " +/- " << Form( "%.5f", erpars[i] ) << endl; 
+      cout << " * " << endl;
+
+      vals[i]=pars[i];
+      errs[i]=erpars[i];
+            
+    }
+
+  ndof = Nb-num.spef.nparams-4; 
+  cout << " * " << setw(10) << "NDOF" << " : " << ndof << endl;
+  
+  chi2r = mNum->MinValue()/( ndof );
+  cout << " * " << setw(10) << "chi2/NDOF" << " : " << Form( "%.2f", chi2r ) << endl;
+  cout << " * " << endl;
+    
+  cout << "" << endl;
+    
+  return;
+
 }
 
 void SPEFitter::FitwDFTmethod( TH1 *hspec )
