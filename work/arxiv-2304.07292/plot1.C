@@ -25,9 +25,9 @@ Int_t plot1()
   c1->SetGridy();
   
 
-  const Int_t N = 9;
+  const Int_t N = 8;
   
-  Double_t x[N] = { 0.5, 1, 2, 3, 4, 5, 6, 7, 8 };
+  Double_t x[N] = { 0.5, 1, 2, 3, 4, 5, 6, 7 };//, 8 };
   
   Double_t y1[N] = { 0.00559,
 		     -0.03223,
@@ -36,8 +36,8 @@ Int_t plot1()
 		     -0.09943,
 		     -0.30910,
 		     -0.30730,
-		     -0.78270,
-		     -1.09600
+		     -0.78270 //,
+		     //-1.09600
   }; 
 
   Double_t er_y1[N] = { 0.01597,
@@ -47,12 +47,12 @@ Int_t plot1()
 			0.02714,
 			0.06258,
 			0.07876,
-			0.13360,
-			0.1876
+			0.13360 //,
+			//0.1876
   };
   
   TGraphErrors *gr1 = new TGraphErrors( N, x, y1, 0, er_y1 );
-  gr1->GetXaxis()->SetLimits( 0.0, 9.0 );
+  gr1->GetXaxis()->SetLimits( 0.0, 8.0 );
   gr1->SetMaximum( +5.0 );
   gr1->SetMinimum( -5.0 );
   gr1->SetMarkerStyle( 20 );
@@ -65,10 +65,10 @@ Int_t plot1()
 
   Double_t y2[6] = { 0.3458,
 		     0.5008,
-		      0.3077,
+		     0.3077,
 		     -0.2732,
 		     -0.7901,
-		      -1.488
+		     -1.488
 		      
   }; 
 

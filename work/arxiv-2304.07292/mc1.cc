@@ -162,10 +162,10 @@ Int_t mc( Float_t mu )
 
     }
   
-  if ( i==0 )
+  //if ( i==0 )
     {
-      c1->Update();
-      c1->WaitPrimitive();
+      //c1->Update();
+      //c1->WaitPrimitive();
     }
 
     }
