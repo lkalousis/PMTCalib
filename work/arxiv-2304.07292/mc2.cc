@@ -41,7 +41,7 @@ Int_t mc( Float_t mu )
   c1->cd();
   c1->SetLogy();
 
-  Double_t Q0 = 0.00158;
+  Double_t Q0 = 0.15158;
   Double_t s0 = 0.00279;
   Pedestal ped( Q0, s0 );
   
@@ -53,11 +53,11 @@ Int_t mc( Float_t mu )
   SPEResponse gaus( PMType::GAUSS, p );
 
   Int_t nbins = 250;
-  Double_t xmin = -0.15;
-  Double_t xmax = +0.85;
+  Double_t xmin = 0.0;
+  Double_t xmax = 0.85;
   
   //Double_t mu = 5.0;
-  Int_t ntot = 2.5e+5;
+  Int_t ntot = 2.5e+6;
 
   TFile *f = new TFile( Form( "./out/mc2_%.2f.root", mu ), "RECREATE" );
   f->cd();
@@ -69,12 +69,15 @@ Int_t mc( Float_t mu )
   PMT specimen( nbins, xmin, xmax, ped, gaus );
 
   Int_t ntoys = 100;
-  for ( Int_t i=0; i<ntoys; i++ )
+  Int_t i=0;
+  
+  //for ( Int_t i=0; i<ntoys; i++ )
+  while ( i<ntoys )
     {
-      cout << " i  : " << i << endl;
-      cout << " mu : " << mu << endl;
-      cout << "" << endl; 
-      
+  cout << " i  : " << i << endl;
+  cout << " mu : " << mu << endl;
+  cout << "" << endl; 
+  
   specimen.GenSpectrum( ntot, mu );
   specimen.GetSpectrum()->SetName( Form( "h_%d", i ) );
   specimen.GetSpectrum()->SetStats(0);
@@ -90,7 +93,7 @@ Int_t mc( Float_t mu )
   Double_t p_test[4] = { g_test, 0.3*g_test, 1.0/(0.2*g_test), 0.2 };
   
   SPEResponse gaus_test( PMType::GAUSS, p_test );
-  NumIntegration dft( 2.0*nbins, xmin, xmax, gaus_test );
+  NumIntegration dft( nbins, xmin, xmax, gaus_test );
   
   
   dft.wbin = specimen.GetSpectrum()->GetBinWidth(1);
@@ -153,13 +156,15 @@ Int_t mc( Float_t mu )
   
   cout << "" << endl;
   cout << "" << endl;
-
-  //if( fit.chi2r<10.0 )
+  
+  if( fit.fit_status==0 )
     {
+      i++;
+      
       h_g->Fill( G_bf );
       h_dg->Fill( dG );
       h_chi2->Fill(fit.chi2r);
-
+      
     }
   
   //if ( i==0 )

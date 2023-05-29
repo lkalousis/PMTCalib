@@ -51,12 +51,12 @@ Int_t example5()
   Double_t p[4] = { Q, s, alpha, w };
   SPEResponse gaus( PMType::GAUSS, p );
 
-  Int_t nbins = 400;
-  Double_t xmin = -50.0;
-  Double_t xmax = 750.0;
+  Int_t nbins = 200;
+  Double_t xmin =   0.0;
+  Double_t xmax = 800.0;
     
   PMT specimen( nbins, xmin, xmax, ped, gaus );
-  Double_t mu = 0.5;
+  Double_t mu = 0.25;
   Int_t ntot = 2.0e+5;
   specimen.GenSpectrum( ntot, mu );
   specimen.GetSpectrum()->SetStats(0);
@@ -87,7 +87,7 @@ Int_t example5()
   
   num.mu = mu;
   
-  
+  /*
   fit.SetNummethod( num );
   fit.FitwNummethod( specimen.GetSpectrum() );
   
@@ -100,7 +100,7 @@ Int_t example5()
   
   Double_t p_fit[4] = { fit.vals[4], fit.vals[5], fit.vals[6], fit.vals[7] };
   num.spef.SetParams( p_fit );
-  
+  */
   TGraph *grBF = num.GetGraph();
   grBF->Draw( "SAME,L" );
   /*
@@ -123,11 +123,11 @@ Int_t example5()
   cout << "" << endl;
   cout << "" << endl;
 
-  //while ( 1!=0 )
-  //  {
+  while ( 1!=0 )
+      {
   c1->Update();
   c1->WaitPrimitive();
-  //  }
+      }
   
   cout << " ... the macro ends ! " << endl;
 	  
