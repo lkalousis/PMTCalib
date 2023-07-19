@@ -222,7 +222,7 @@ TGraph* DFTmethod::GetGraphN( Int_t n )
   for ( Int_t i=0; i<nbins; i++ )
     {
       x[i] = xvalues.at( i );
-      Double_t y_ = Norm * wbin * TMath::Exp( -1.0*mu )/TMath::Factorial( n ) * pow( mu, 1.0*n*1.0 ) * fftout[i]/( 1.0*N*1.0 );
+      Double_t y_ = Norm*wbin*TMath::Exp( -1.0*mu )/TMath::Factorial( n ) * pow( mu, 1.0*n*1.0 ) * fftout[i]/( 1.0*N*1.0 );
 
       if ( y_<1.0e-10 ) y[i] = 1.e-4;
       else y[i] = y_;

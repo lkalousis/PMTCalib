@@ -179,16 +179,16 @@ Int_t project8()
       Double_t xmin;
       Double_t wbin;
             
-      xmin = get_xmin( Form( "/Users/kalousis/PMTCalib/work/arxiv/data/%d/F1Title00000.txt", run ) );
-      xmax = get_xmax( Form( "/Users/kalousis/PMTCalib/work/arxiv/data/%d/F1Title00000.txt", run ) );
-      nbins = get_nbins( Form( "/Users/kalousis/PMTCalib/work/arxiv/data/%d/F1Title00000.txt", run ) );
+      xmin = get_xmin( Form( "/Users/kalousis/PMTCalib/work/arxiv-2304.08735/data/%d/F1Title00000.txt", run ) );
+      xmax = get_xmax( Form( "/Users/kalousis/PMTCalib/work/arxiv-2304.08735/data/%d/F1Title00000.txt", run ) );
+      nbins = get_nbins( Form( "/Users/kalousis/PMTCalib/work/arxiv-2304.08735/data/%d/F1Title00000.txt", run ) );
 
       nbins /= 8; // <---------- !!! Only for even nbins
       wbin = ( xmax-xmin )/(1.0*nbins-1.0);
       //cout << xmin << ", " << xmax << ", " << nbins << ", " << wbin << endl;
       //getchar();
       
-      hSG[run] = get_histo( nbins, xmin, xmax, Form( "/Users/kalousis/PMTCalib/work/arxiv/data/%d/F1Title00000.txt", run ) );
+      hSG[run] = get_histo( nbins, xmin, xmax, Form( "/Users/kalousis/PMTCalib/work/arxiv-2304.08735/data/%d/F1Title00000.txt", run ) );
       hSG[run]->SetName( Form( "hSG_%d", run ) );
       hSG[run]->GetXaxis()->SetRangeUser( -0.04, 0.40 );
       hSG[run]->SetStats( 0 );
@@ -227,6 +227,16 @@ Int_t project8()
       TGraph *grBF = mod.GetGraph();
       grBF->Draw( "SAME,L" );
       
+      Int_t npeaks = 35;
+      TGraph *grPE[35];
+      
+      for ( Int_t i=0; i<35; i++ )
+	{
+	  grPE[i] = mod.GetGraphN( i );
+	  grPE[i]->Draw( "SAME,L" );
+	  
+	}
+  
       /* ... */
       
       Double_t Q = fit.vals[4];
@@ -278,7 +288,7 @@ Int_t project8()
       c1->Update();
       c1->WaitPrimitive();
       
-      //for ( Int_t i=0; i<npeaks; i++ ) delete grPE[i];
+      for ( Int_t i=0; i<npeaks; i++ ) delete grPE[i];
             
     }
 

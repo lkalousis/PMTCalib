@@ -42,7 +42,7 @@ class PMT : public TObject
   
   void DrawSpectrum()
   {
-    spectrum->SetMaximum( 2.5*spectrum->GetBinContent( spectrum->GetMaximumBin() ) );
+    //spectrum->SetMaximum( 1.2*spectrum->GetBinContent( spectrum->GetMaximumBin() ) );
     spectrum->Draw( "PEZ" );
       
   };

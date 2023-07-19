@@ -271,22 +271,22 @@ Int_t project8()
       h_g->Fill( Gfit );
       h_chi2->Fill(fit.chi2r);
 
-      Int_t npeaks = 10;
-      TGraph *grPE[npeaks];
       
-      for ( Int_t i=0; i<npeaks; i++ )
-	{
-	  grPE[i] = dft.GetGraphN( i );
-	  grPE[i]->Draw( "SAME,L" );
-	  
-	}
-      
-      //while ( run==4 ) { c1->Update(); c1->WaitPrimitive(); }
-      //c1->Update();
-      //c1->WaitPrimitive();
-      
-      for ( Int_t i=0; i<npeaks; i++ ) delete grPE[i];
+        Int_t npeaks = 10;
+        TGraph *grPE[npeaks];
+        
+        for ( Int_t i=0; i<npeaks; i++ )
+        {
+            grPE[i] = dft.GetGraphN( i );
+            grPE[i]->Draw( "SAME,L" );
             
+        }
+        
+        //while ( run==4 ) { c1->Update(); c1->WaitPrimitive(); }
+        //c1->Update();
+        //c1->WaitPrimitive();
+        
+        for ( Int_t i=0; i<npeaks; i++ ) delete grPE[i];
     }
 
   h_g->SetMarkerStyle( 20 );

@@ -2,6 +2,8 @@
 #include "PMTModel.h"
 #include <gsl_sf_hyperg.h>
 
+Int_t nlim = 10;
+
 using namespace std;
 
 ClassImp( PMTModel )
@@ -196,7 +198,7 @@ Double_t PMTModel::F3( Double_t xx )
   Double_t SR0 = 1.0/( sqrt( 2.0*TMath::Pi() )*s0 )*TMath::Exp( -0.5*arg*arg );
   SR0 *= TMath::Poisson( 0, mu );
   result += SR0; // 0
-
+  
   
   Double_t omega0 = ( xx - Q0 - alpha*pow( s0, 2.0 ) )/sqrt(2.0)/s0;
   Double_t SR1 = w*alpha/2.0*TMath::Exp( -alpha*( xx-Q0 )+pow( alpha*s0, 2.0 )/2.0 )*TMath::Erfc( -omega0 );
@@ -215,9 +217,7 @@ Double_t PMTModel::F3( Double_t xx )
   SR1 += ( 1.0-w )/2.0/gn/( sqrt( 2.0*TMath::Pi() )*s1 )*TMath::Exp( -0.5*arg1*arg1 )*TMath::Erfc( A/B );
   SR1 *= TMath::Poisson( 1, mu );
   result += SR1; // 1
-  
-  
-  Int_t nlim = 10;
+   
 
   Double_t k = s/gn/sqrt( 2.0*TMath::Pi() )*TMath::Exp( -pow( Q, 2.0 )/( 2.0*pow( s, 2.0 ) ) );
   Double_t Qg = Q + k;
@@ -292,7 +292,7 @@ Double_t PMTModel::F3( Double_t xx )
   Double_t Qs = w/alpha + (1.0-w)*Qg;
   Double_t ss2 = w/pow( alpha, 2.0 ) + (1-w)*sg2 + w*(1.0-w)*pow( Qg-1.0/alpha, 2.0 );
       
-  for ( Int_t n = nlim; n<50; n++ )
+  for ( Int_t n = nlim; n<65; n++ )
     {
       Double_t Qn = Q0 + 1.0*n*Qs;
       Double_t sn2 = pow( s0, 2.0 ) + 1.0*n*ss2;
@@ -346,45 +346,174 @@ TGraph* PMTModel::GetGraph()
 
 }
 
-
+TGraph* PMTModel::GetGraphN( Int_t n )
+{
+  Double_t Norm = params[0];
   
-      
+  Double_t Q0 = params[1];
+  Double_t s0 = params[2];
+  
+  Double_t mu = params[3];
+  
+  Double_t Q = params[4];
+  Double_t s = params[5];
+  
+  Double_t alpha = params[6];
+  Double_t w = params[7];
+  
+  /* ... */
+    
+  Double_t x[nbins]; 
+  Double_t y[nbins];
+    
+  for ( Int_t i=0; i<nbins; i++ )
+    {
+      x[i] = xmin + step/2 + 1.0*i*step;
+      Double_t y_ = 0.0;
 
-
-
-
-/*
-
-//Double_t cn = alpha*pow( alpha*s0*sqrt( 2.0 ), n-1.0 )/TMath::Factorial( n-1.0 )/2.0/sqrt( TMath::Pi() );
-
-      Double_t psi = ( xx-Q0 )/sqrt(2.0)/s0;
-      Double_t psi2 = pow( psi, 2.0 );
-      Double_t omega02 = pow( omega0, 2.0 );
-
-      Double_t A1 = 1.0*n/2.0;
-      Double_t A2 = (0.0+n+1.0)/2.0;
-      
-      Double_t I0=1.0;
-      Double_t hi_limit = 20.0;
-      //Double_t lo_limit = -1000.0;
-      
-      if ( omega02>=hi_limit )
+      if ( n==0 )
 	{
-	  I0 = 2.0*sqrt( TMath::Pi() )*TMath::Exp( omega02-psi2 + ( n-1.0 )*TMath::Log( omega0 ) );
+	  Double_t arg = 0.0; 
+	  if ( s0!=0.0 ) arg = ( x[i] - Q0 )/s0;    
+	  else cout << "Error: The code tries to divide by zero." << endl;
+	  
+	  Double_t SR0 = 1.0/( sqrt( 2.0*TMath::Pi() )*s0 )*TMath::Exp( -0.5*arg*arg );
+	  SR0 *= TMath::Poisson( 0, mu );
+	  y_ = Norm*wbin*SR0; // 0
+	  	  
+
+	}
+
+      if ( n==1 )
+	{
+	  Double_t omega0 = ( x[i] - Q0 - alpha*pow( s0, 2.0 ) )/sqrt(2.0)/s0;
+	  Double_t SR1 = w*alpha/2.0*TMath::Exp( -alpha*( x[i]-Q0 )+pow( alpha*s0, 2.0 )/2.0 )*TMath::Erfc( -omega0 );
+
+	  Double_t Q1 = Q0+Q;
+	  Double_t s12 = pow( s0, 2.0 )+pow( s, 2.0 );
+	  Double_t s1 = sqrt( s12 );
+	  
+	  Double_t arg1 = 0.0; 
+	  if ( s1!=0.0 ) arg1 = ( x[i] - Q1 )/s1;    
+	  else cout << "Error: The code tries to divide by zero." << endl;
+	  
+	  Double_t gn = 0.5*TMath::Erfc( -Q/( sqrt(2.0)*s ) );
+	  Double_t A = ( Q0-x[i] )*pow( s, 2.0 ) - Q*pow( s0, 2.0 ); 
+	  Double_t B = sqrt( 2.0 )*s0*s*s1;
+	  SR1 += ( 1.0-w )/2.0/gn/( sqrt( 2.0*TMath::Pi() )*s1 )*TMath::Exp( -0.5*arg1*arg1 )*TMath::Erfc( A/B );
+	  SR1 *= TMath::Poisson( 1, mu );
+	  y_ += Norm*wbin*SR1; // 1
 	  
 	}
-      else if ( omega02<hi_limit && omega02>=0.0  )
+
+      if ( n>=2 && n<nlim )
 	{
-	  Double_t t1 = TMath::Gamma( A1 )*gsl_sf_hyperg_1F1( 1.0/2.0-A1, 1.0/2.0, -omega02 );
-	  Double_t t2 = 2.0*omega0*TMath::Gamma( A2 )*gsl_sf_hyperg_1F1( 3.0/2.0-A2, 3.0/2.0, -omega02 );
-	  I0 = ( t1+t2 )*TMath::Exp( omega02-psi2 );
+	  Double_t gn = 0.5*TMath::Erfc( -Q/( sqrt(2.0)*s ) );
+	  Double_t k = s/gn/sqrt( 2.0*TMath::Pi() )*TMath::Exp( -pow( Q, 2.0 )/( 2.0*pow( s, 2.0 ) ) );
+	  Double_t Qg = Q + k;
+	  Double_t sg2 = pow( s, 2.0 ) - ( Q+k )*k;
 	  
-	}
-      else if ( omega02<0.0 )
-	{
-	  Double_t t3 = TMath::Gamma( A1 )*TMath::Gamma( A2 )/sqrt( TMath::Pi() );
-	  I0 = t3*gsl_sf_hyperg_U( A1, 1.0/2.0, omega02 )*TMath::Exp( -psi2 );
-      
+	  Double_t SRn = 0.0;
+            
+	  Double_t Qn = Q0 + 1.0*n*Qg;
+	  Double_t sn2 = pow( s0,2.0 )+ 1.0*n*sg2;
+	  Double_t sn = sqrt( sn2 );
+	  
+	  Double_t argn = 0.0; 
+	  if ( sn!=0.0 ) argn = ( x[i] - Qn )/sn;    
+	  else cout << "Error: The code tries to divide by zero." << endl;
+	  Double_t gnB = 1.0/( sqrt( 2.0*TMath::Pi() )*sn )*TMath::Exp( -0.5*argn*argn );
+	  SRn += pow( 1.0-w, n )*gnB;
+	  
+	  
+	  for ( Int_t m=1; m<=n; m++ )
+	    {
+	      Double_t Qmn = Q0 + 1.0*(n-m)*Qg;
+	      Double_t smn2 = pow( s0, 2.0 )+1.0*(n-m)*sg2;
+	      Double_t smn = sqrt( smn2 );
+	      
+	      Double_t cmn = alpha*pow( alpha*smn*sqrt( 2.0 ), m-1.0 )/TMath::Factorial( m-1.0 )/2.0/sqrt( TMath::Pi() );
+	      
+	      Double_t psi = ( x[i]-Qmn )/sqrt(2.0)/smn;
+	      Double_t psi2 = pow( psi, 2.0 );
+	      Double_t omega = ( x[i]-Qmn-alpha*pow( smn, 2.0 ) )/sqrt(2.0)/smn;
+	      Double_t omega2 = pow( omega, 2.0 );
+	      
+	      Double_t A1m = 1.0*m/2.0;
+	      Double_t A2m = (0.0+m+1.0)/2.0;
+	      
+	      Double_t Imn=0.0;
+	      Double_t hi_limit=25.0;
+	      
+	      if ( omega>=hi_limit )
+		{
+		  Imn = 2.0*sqrt( TMath::Pi() )*TMath::Exp( omega2-psi2 + ( m-1.0 )*TMath::Log( omega ) );
+		  
+		}
+	      else if ( omega<hi_limit && omega>=0.0  )
+		{
+		  Double_t t1 = TMath::Gamma( A1m )*gsl_sf_hyperg_1F1( 1.0/2.0-A1m, 1.0/2.0, -omega2 );
+		  Double_t t2 = 2.0*omega*TMath::Gamma( A2m )*gsl_sf_hyperg_1F1( 3.0/2.0-A2m, 3.0/2.0, -omega2 );
+		  Imn = ( t1+t2 )*TMath::Exp( omega2-psi2 );
+		  
+		}
+	      else if ( omega<0.0 )
+		{
+		  Double_t t3 = TMath::Gamma( A1m )*TMath::Gamma( A2m )/sqrt( TMath::Pi() );
+		  Imn = t3*gsl_sf_hyperg_U( A1m, 1.0/2.0, omega2 )*TMath::Exp( -psi2 );
+		  
+		}
+	  
+	  
+	      Double_t hmnB = cmn*Imn;
+	      Double_t binom = TMath::Factorial( n )/TMath::Factorial( m )/TMath::Factorial( n-m );
+	      SRn += binom*pow( w, m )*pow( 1.0-w, n-m )*hmnB;
+	      
+	    }
+           
+	  SRn *= TMath::Poisson( n, mu );
+	  y_ += Norm*wbin*SRn; // n= 2-nlim
+	  
+
 	}
 
-*/
+       if ( n>=nlim )
+	 {
+	   Double_t gn = 0.5*TMath::Erfc( -Q/( sqrt(2.0)*s ) );
+	   Double_t k = s/gn/sqrt( 2.0*TMath::Pi() )*TMath::Exp( -pow( Q, 2.0 )/( 2.0*pow( s, 2.0 ) ) );
+	   Double_t Qg = Q + k;
+	   Double_t sg2 = pow( s, 2.0 ) - ( Q+k )*k;
+	    
+	   Double_t Qs = w/alpha + (1.0-w)*Qg;
+	   Double_t ss2 = w/pow( alpha, 2.0 ) + (1-w)*sg2 + w*(1.0-w)*pow( Qg-1.0/alpha, 2.0 );
+	   
+	   Double_t Qn = Q0 + 1.0*n*Qs;
+	   Double_t sn2 = pow( s0, 2.0 ) + 1.0*n*ss2;
+	   Double_t sn = sqrt( sn2 );
+	   
+	   Double_t argn = 0.0; 
+	   if ( sn!=0.0 ) argn = ( x[i] - Qn )/sn;    
+	   else cout << "Error: The code tries to divide by zero." << endl;
+	   Double_t SRn = 1.0/( sqrt( 2.0*TMath::Pi() )*sn )*TMath::Exp( -0.5*argn*argn );
+	   
+	   SRn *= TMath::Poisson( n, mu );
+	   y_ += Norm*wbin*SRn; // n >= nlim
+	   
+	 }
+       
+      if ( y_<1.0e-10 ) y[i] = 1.e-3;
+      else y[i] = y_;
+            
+    }
+  
+  TGraph *_gr = new TGraph( nbins, x, y );
+  
+  _gr->SetLineWidth( 2 );
+  _gr->SetLineStyle( 3 );
+  _gr->SetLineColor( kBlack );
+  _gr->SetMarkerColor( kBlack );
+  _gr->SetMarkerSize( 0.1 );
+  
+  return _gr;
+
+}
