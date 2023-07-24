@@ -6,6 +6,7 @@
 
 #include "TFile.h"
 #include "TCanvas.h"
+#include "TLatex.h"
 
 #include "PMTStyle.h"
 #include "PMType.h"
@@ -45,7 +46,7 @@ Int_t mc( Float_t mu )
   Double_t s0 = 0.0028;
   Pedestal ped( Q0, s0 );
   
-  Double_t Q = 0.030; Double_t per = 0.28;
+  Double_t Q = 0.030; Double_t per = 0.25;
   Double_t s = per*Q;
   Double_t alpha = 82.0;
   Double_t w = 0.2;
@@ -67,9 +68,12 @@ Int_t mc( Float_t mu )
   TH1F *h_chi2 = new TH1F( "h_chi2" , "; #chi^{2}/NDOF; Entries",  150, 0.0, 15.0 );
 
   PMT specimen( nbins, xmin, xmax, ped, gaus );
-
+  
   Int_t ntoys = 100;
-  for ( Int_t i=0; i<ntoys; i++ )
+  Int_t i=0;
+
+  while ( i<ntoys )
+  //for ( Int_t i=0; i<ntoys; i++ )
     {
       cout << " i   : " << i << endl;
       cout << " mu  : " << mu << endl;
@@ -80,9 +84,10 @@ Int_t mc( Float_t mu )
   specimen.GetSpectrum()->SetName( Form( "h_%d", i ) );
   specimen.GetSpectrum()->SetStats(0);
   
-  specimen.GetSpectrum()->GetXaxis()->SetRangeUser( 0.1, 0.5 );
-  specimen.GetSpectrum()->SetMaximum( 250000.0 );//1.1*specimen.GetSpectrum()->GetBinContent( specimen.GetSpectrum()->GetMaximumBin() ) );
-
+  specimen.GetSpectrum()->GetXaxis()->SetRangeUser( 0.1, 0.7 );
+  //specimen.GetSpectrum()->SetMaximum( 2.5e+5 );
+  specimen.GetSpectrum()->SetMaximum( 2.5*specimen.GetSpectrum()->GetBinContent( specimen.GetSpectrum()->GetMaximumBin() ) );
+  
   specimen.DrawSpectrum();
   
   
@@ -116,7 +121,15 @@ Int_t mc( Float_t mu )
       grPE[i]->Draw( "SAME,L" );
       
     } 
+
+  TLatex *t = new TLatex();
+  t->DrawLatex( 0.50, 1.0e+4, Form( "#font[22]{#scale[0.8]{#mu = %.3f #pm %.3f}}", fit.vals[3], fit.errs[3] ) );
+
+  TLatex *t1 = new TLatex();
+  t1->DrawLatex( 0.50, 0.5e+4, Form( "#font[22]{#scale[0.8]{#chi^{2}/NDOF = %.2f}}", fit.chi2r ) );
+
   
+      
   Double_t gn = 0.5*TMath::Erfc( -Q/( sqrt(2.0)*s ) );
   Double_t k = s/gn/sqrt( 2.0*TMath::Pi() )*TMath::Exp( -pow( Q, 2.0 )/( 2.0*pow( s, 2.0 ) ) );
   Double_t Qg = Q + k;
@@ -142,15 +155,17 @@ Int_t mc( Float_t mu )
   cout << "" << endl;
   cout << "" << endl;
 
-  //if( fit.chi2r<10.0 )
+  if( fit.chi2r<5.0 )
     {
       h_g->Fill( G_bf );
       h_dg->Fill( dG );
       h_chi2->Fill(fit.chi2r);
 
+      i++;
+      
     }
     
-  if ( i==0 )
+  while ( i==1 )
     {
       c1->Update();
       c1->WaitPrimitive();
