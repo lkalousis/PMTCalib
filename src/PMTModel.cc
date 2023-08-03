@@ -197,7 +197,7 @@ Double_t PMTModel::F3( Double_t xx )
     
   Double_t SR0 = 1.0/( sqrt( 2.0*TMath::Pi() )*s0 )*TMath::Exp( -0.5*arg*arg );
   SR0 *= TMath::Poisson( 0, mu );
-  result += SR0; // 0
+  result += SR0; // n = 0
   
   
   Double_t omega0 = ( xx - Q0 - alpha*pow( s0, 2.0 ) )/sqrt(2.0)/s0;
@@ -216,9 +216,9 @@ Double_t PMTModel::F3( Double_t xx )
   Double_t B = sqrt( 2.0 )*s0*s*s1;
   SR1 += ( 1.0-w )/2.0/gn/( sqrt( 2.0*TMath::Pi() )*s1 )*TMath::Exp( -0.5*arg1*arg1 )*TMath::Erfc( A/B );
   SR1 *= TMath::Poisson( 1, mu );
-  result += SR1; // 1
-   
-
+  result += SR1; // n = 1
+  
+  
   Double_t k = s/gn/sqrt( 2.0*TMath::Pi() )*TMath::Exp( -pow( Q, 2.0 )/( 2.0*pow( s, 2.0 ) ) );
   Double_t Qg = Q + k;
   Double_t sg2 = pow( s, 2.0 ) - ( Q+k )*k;
@@ -284,7 +284,7 @@ Double_t PMTModel::F3( Double_t xx )
 	}
            
       SRn *= TMath::Poisson( n, mu );
-      result += SRn; // n= 2-nlim
+      result += SRn; // n = 2-nlim
       
     } 
   

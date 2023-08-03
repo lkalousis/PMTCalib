@@ -46,7 +46,7 @@ Int_t mc( Float_t mu )
   Double_t s0 = 0.0028;
   Pedestal ped( Q0, s0 );
   
-  Double_t Q = 0.030; Double_t per = 0.25;
+  Double_t Q = 0.030; Double_t per = 0.30;
   Double_t s = per*Q;
   Double_t alpha = 82.0;
   Double_t w = 0.2;
@@ -116,7 +116,7 @@ Int_t mc( Float_t mu )
   TGraph *grPE[35];
   
   for ( Int_t i=0; i<35; i++ )
-    {
+    { //Int_t i = 10;
       grPE[i] = mod.GetGraphN( i );
       grPE[i]->Draw( "SAME,L" );
       
@@ -165,7 +165,7 @@ Int_t mc( Float_t mu )
       
     }
     
-  while ( i==1 )
+  if ( i==1 )
     {
       c1->Update();
       c1->WaitPrimitive();
