@@ -270,7 +270,7 @@ Double_t PMTModel::F3( Double_t xx )
 	    }
 	  else if ( omega<0.0 )
 	    {
-	      Double_t t3 = TMath::Gamma( A1m )*TMath::Gamma( A2m )/( 2.0*TMath::Pi() );
+	      Double_t t3 = 1.0/( 2.0*TMath::Pi() )*TMath::Gamma( A1m )*TMath::Gamma( A2m );
 	      Imn = t3*gsl_sf_hyperg_U( A1m, 1.0/2.0, omega2 )*TMath::Exp( -psi2 );
 	      
 	    }
