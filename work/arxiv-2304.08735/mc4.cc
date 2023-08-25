@@ -46,7 +46,7 @@ Int_t mc( Float_t mu )
   Double_t s0 = 0.0028;
   Pedestal ped( Q0, s0 );
   
-  Double_t Q = 0.030; Double_t per = 0.30;
+  Double_t Q = 0.030; Double_t per = 0.25;
   Double_t s = per*Q;
   Double_t alpha = 82.0;
   Double_t w = 0.2;
@@ -155,7 +155,7 @@ Int_t mc( Float_t mu )
   cout << "" << endl;
   cout << "" << endl;
 
-  if( fit.chi2r<5.0 )
+  if( fit.chi2r<115.0 )
     {
       h_g->Fill( G_bf );
       h_dg->Fill( dG );
@@ -165,7 +165,7 @@ Int_t mc( Float_t mu )
       
     }
     
-  if ( i==1 )
+  if ( i<4 )
     {
       c1->Update();
       c1->WaitPrimitive();
