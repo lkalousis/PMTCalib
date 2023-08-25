@@ -119,7 +119,7 @@ Double_t PMTModel::F2( Double_t xx )
   Double_t s0 = params[2];
   
   Double_t mu = params[3];
-    
+  
   Double_t Q = params[4];
   Double_t s = params[5];
   
@@ -145,7 +145,7 @@ Double_t PMTModel::F2( Double_t xx )
   Double_t B = sqrt( 2.0 )*s0*s*s1;
   SR1 += (1.0-w)*1.0/2.0/gn/( sqrt( 2.0*TMath::Pi() )*s1 )*TMath::Exp( -0.5*arg1*arg1 )*TMath::Erfc( A/B );
   result += TMath::Poisson( 1.0, mu )*SR1;
-
+  
   Double_t k = s/gn/sqrt( 2.0*TMath::Pi() )*TMath::Exp( -pow( Q, 2.0 )/( 2.0*pow( s, 2.0 ) ) );
   Double_t Qf = Q + k;
   Double_t sf2 = pow( s, 2.0 ) - ( Q+k )*k;
@@ -250,7 +250,7 @@ Double_t PMTModel::F3( Double_t xx )
 	  Double_t omega = ( xx-Qmn-alpha*pow( smn, 2.0 ) )/sqrt(2.0)/smn;
 	  Double_t omega2 = pow( omega, 2.0 );
 	  
-	  Double_t A1m = 1.0*m/2.0;
+	  Double_t A1m = m/2.0;
 	  Double_t A2m = (m+1.0)/2.0;
 	  
 	  Double_t Imn=0.0;
@@ -437,7 +437,7 @@ TGraph* PMTModel::GetGraphN( Int_t n )
 	      Double_t omega = ( x[i]-Qmn-alpha*pow( smn, 2.0 ) )/sqrt(2.0)/smn;
 	      Double_t omega2 = pow( omega, 2.0 );
 	      
-	      Double_t A1m = 1.0*m/2.0;
+	      Double_t A1m = m/2.0;
 	      Double_t A2m = (m+1.0)/2.0;
 	      
 	      Double_t Imn=0.0;
