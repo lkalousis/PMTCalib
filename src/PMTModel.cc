@@ -202,7 +202,7 @@ Double_t PMTModel::F3( Double_t xx )
   
   Double_t omega0 = ( xx - Q0 - alpha*pow( s0, 2.0 ) )/sqrt(2.0)/s0;
   Double_t SR1 = w*alpha/2.0*TMath::Exp( pow( alpha*s0, 2.0 )/2.0 - alpha*( xx-Q0 ) )*TMath::Erfc( -omega0 );
-
+  
   Double_t Q1 = Q0+Q;
   Double_t s12 = pow( s0, 2.0 )+pow( s, 2.0 );
   Double_t s1 = sqrt( s12 );
@@ -210,7 +210,7 @@ Double_t PMTModel::F3( Double_t xx )
   Double_t arg1 = 0.0; 
   if ( s1!=0.0 ) arg1 = ( xx - Q1 )/s1;    
   else cout << "Error: The code tries to divide by zero." << endl;
-
+  
   Double_t gn = 0.5*TMath::Erfc( -Q/( sqrt(2.0)*s ) );
   Double_t A = ( Q0-xx )*pow( s, 2.0 ) - Q*pow( s0, 2.0 ); 
   Double_t B = sqrt( 2.0 )*s0*s*s1;
@@ -220,13 +220,13 @@ Double_t PMTModel::F3( Double_t xx )
   
   
   Double_t k = s/gn/sqrt( 2.0*TMath::Pi() )*TMath::Exp( -pow( Q, 2.0 )/( 2.0*pow( s, 2.0 ) ) );
-  Double_t Qg = Q + k;
-  Double_t sg2 = pow( s, 2.0 ) - ( Q+k )*k;
+  Double_t Qg = Q+k;
+  Double_t sg2 = pow( s, 2.0 ) - Qg*k;
   
   for ( Int_t n = 2; n<nlim; n++ )
     {
       Double_t SRn = 0.0;
-            
+      
       Double_t Qn = Q0 + 1.0*n*Qg;
       Double_t sn2 = pow( s0,2.0 )+ 1.0*n*sg2;
       Double_t sn = sqrt( sn2 );
@@ -236,7 +236,7 @@ Double_t PMTModel::F3( Double_t xx )
       else cout << "Error: The code tries to divide by zero." << endl;
       Double_t gnB = 1.0/( sqrt( 2.0*TMath::Pi() )*sn )*TMath::Exp( -0.5*argn*argn );
       SRn += pow( 1.0-w, n )*gnB;
-            
+      
       for ( Int_t m=1; m<=n; m++ )
 	{
 	  Double_t Qmn = Q0 + 1.0*(n-m)*Qg;
@@ -408,8 +408,8 @@ TGraph* PMTModel::GetGraphN( Int_t n )
 	{
 	  Double_t gn = 0.5*TMath::Erfc( -Q/( sqrt(2.0)*s ) );
 	  Double_t k = s/gn/sqrt( 2.0*TMath::Pi() )*TMath::Exp( -pow( Q, 2.0 )/( 2.0*pow( s, 2.0 ) ) );
-	  Double_t Qg = Q + k;
-	  Double_t sg2 = pow( s, 2.0 ) - ( Q+k )*k;
+	  Double_t Qg = Q+k;
+	  Double_t sg2 = pow( s, 2.0 ) - Qg*k;
 	  
 	  Double_t SRn = 0.0;
             
@@ -479,8 +479,8 @@ TGraph* PMTModel::GetGraphN( Int_t n )
 	 {
 	   Double_t gn = 0.5*TMath::Erfc( -Q/( sqrt(2.0)*s ) );
 	   Double_t k = s/gn/sqrt( 2.0*TMath::Pi() )*TMath::Exp( -pow( Q, 2.0 )/( 2.0*pow( s, 2.0 ) ) );
-	   Double_t Qg = Q + k;
-	   Double_t sg2 = pow( s, 2.0 ) - ( Q+k )*k;
+	   Double_t Qg = Q+k;
+	   Double_t sg2 = pow( s, 2.0 ) - Qg*k;
 	    
 	   Double_t Qs = w/alpha + (1.0-w)*Qg;
 	   Double_t ss2 = w/pow( alpha, 2.0 ) + (1-w)*sg2 + w*(1.0-w)*pow( Qg-1.0/alpha, 2.0 );
