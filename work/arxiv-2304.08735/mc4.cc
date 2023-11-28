@@ -46,7 +46,7 @@ Int_t mc( Float_t mu )
   Double_t s0 = 0.0028;
   Pedestal ped( Q0, s0 );
   
-  Double_t Q = 0.030; Double_t per = 0.25;
+  Double_t Q = 0.030; Double_t per = 0.45;
   Double_t s = per*Q;
   Double_t alpha = 82.0;
   Double_t w = 0.2;

@@ -40,9 +40,11 @@ class PMTModel : public TObject
   Double_t F1( Double_t xx ); // SIMPLE GAUSS 1
   Double_t F2( Double_t xx ); // SIMPLE GAUSS 2
   Double_t F3( Double_t xx ); // ANALYTICAL GAUSS 2
+  Double_t F4( Double_t xx ); // EXPLICIT GAUSS 2
   
   TGraph* GetGraph();
   TGraph* GetGraphN( Int_t n );
+  TGraph* GetGraphN2( Int_t n );
   
   ClassDef( PMTModel, 1 )
     

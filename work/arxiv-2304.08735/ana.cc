@@ -168,6 +168,8 @@ Int_t project8()
 
   TH1F *h_g = new TH1F( "h_g" , "; Gain in nVs; Entries",  40, 0.025, 0.028 );
   TH1F *h_chi2 = new TH1F( "h_chi2" , "; #chi^{2}/NDOF; Entries",  25, 0.0, 5.0 );
+
+  TH1F *h_g_j = new TH1F( "h_g_j" , "; Gain in nVs; Entries",  40, 0.025, 0.028 );
   
   for ( Int_t run=0; run<6; run++ )
     {
@@ -257,6 +259,24 @@ Int_t project8()
       cout << "    : " << ( Q/Gfit - 1.0 )*100.0 << endl;
       cout << "    : " << ( Qf/Gfit - 1.0 )*100.0 << endl;
       cout << "" << endl;
+
+      h_g_j->Reset();
+      
+      for ( Int_t j=0; j<1.0e+4; j++ )
+	{
+	  Double_t Q_j = gRandom->Gaus( fit.vals[4], fit.errs[4] );
+	  Double_t s_j = gRandom->Gaus( fit.vals[5], fit.errs[5] );
+	  Double_t a_j = gRandom->Gaus( fit.vals[6], fit.errs[6] );
+	  Double_t w_j = gRandom->Gaus( fit.vals[7], fit.errs[7] );
+
+	  Double_t gn_j = 0.5*TMath::Erfc( -Q_j/( sqrt(2.0)*s_j ) );
+	  Double_t k_j = s_j/gn_j/sqrt( 2.0*TMath::Pi() )*TMath::Exp( -pow( Q_j, 2.0 )/( 2.0*pow( s_j, 2.0 ) ) );
+	  Double_t Qf_j = Q_j + k_j;
+
+	  Double_t Gfit_j = w_j/a_j + (1.0-w_j)*Qf_j;
+	  h_g_j->Fill( Gfit_j );
+
+	}
       
       //cout << " D. : " << ( Gfit/0.02656 - 1.0 )*100.0 << endl;
       //cout << "" << endl;
@@ -271,6 +291,8 @@ Int_t project8()
       t3->DrawLatex( 0.20, 2.5e+3, Form( "#font[22]{#scale[0.8]{#alpha = %.0f #pm %.0f}}", fit.vals[6], fit.errs[6] ) );
       TLatex *t4 = new TLatex();
       t4->DrawLatex( 0.20, 1.4e+3, Form( "#font[22]{#scale[0.8]{w = %.3f #pm %.3f}}", fit.vals[7], fit.errs[7] ) );
+      TLatex *t5 = new TLatex();
+      t5->DrawLatex( 0.20, 7.5e+2, Form( "#font[22]{#scale[0.8]{#chi^{2}/NDOF = %.2f}}", fit.chi2r ) );
       
       h_g->Fill( Gfit );
       h_chi2->Fill(fit.chi2r);
@@ -289,7 +311,13 @@ Int_t project8()
       c1->WaitPrimitive();
       
       for ( Int_t i=0; i<npeaks; i++ ) delete grPE[i];
-            
+
+      h_g_j->Draw( "" );
+
+      cout << "!!!" << Gfit << " +/- " << h_g_j->GetRMS() << endl;
+      c1->Update();
+      c1->WaitPrimitive();
+      
     }
 
   h_g->SetMarkerStyle( 20 );
