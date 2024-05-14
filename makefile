@@ -16,7 +16,7 @@ cxx = g++
 cxxflags = -g -W -O -Wall -Wno-deprecated -Werror -fPIC -std=c++1y
 
 incflags = -I.
-incflags += -I$(ROOTSYS)/include/ -I/$(GSL)/include/gsl/ -I/$(PMTCALIB)/src/ 
+incflags += -I$(ROOTSYS)/include/ -I/$(GSL)/include/gsl/ -I/$(PMTCALIB)/src/ -I/usr/local/include/
 
 so = g++
 soflags = -g -shared -fPIC

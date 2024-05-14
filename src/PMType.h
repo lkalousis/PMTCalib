@@ -4,7 +4,7 @@
 
 namespace PMType
 {
-  enum Response { GAUSS, GAMMA };
+  enum Response { GAUSS, GAMMA, WEIBULL, LOGNORMAL, GAUSS2EXP, TEST };
   
   enum Model { SIMPLEGAUSS, TRUNCGAUSS, ANATRUNCG, EXPTRUNCG };
     
