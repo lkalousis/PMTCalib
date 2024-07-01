@@ -137,24 +137,28 @@ Double_t _lognormalexpfunc( Double_t *x, Double_t *par )
 
 Double_t _testfunc( Double_t *x, Double_t *par )
 {
-  Double_t xx = x[0];
+   Double_t xx = x[0];
     
-  Double_t lambda = par[0];
-  Double_t theta = par[1];
+  Double_t Q = par[0];
+  Double_t s = par[1];
   
-  Double_t alpha1 = par[2];
-  Double_t w1 = par[3];
-
-  Double_t alpha2 = par[4];
-  Double_t w2 = par[5];
+  Double_t lambda = par[2];
+  Double_t theta = par[4];
+  Double_t w = par[3];
     
   Double_t result = 0.0;
   if ( xx>=0.0 )
     {
+      Double_t arg = 0.0; 
+      if ( s!=0.0 ) arg = ( xx - Q )/s;    
+      else cout << "Error: The code tries to divide by zero." << endl;
+
+      Double_t gn = 0.5*TMath::Erfc( -Q/( sqrt(2.0)*s ) );
+
       Double_t f = lambda*(1.0+theta);
       Double_t fx = lambda*(1.0+theta)*xx;
-      
-      result = w1*alpha1*TMath::Exp( -xx*alpha1 ) + w2*alpha2*TMath::Exp( -xx*alpha2 ) + ( 1.0-w1-w2 )*f*pow( fx, theta )/TMath::Gamma(1.0+theta)*TMath::Exp( -fx );
+            
+      result = w*f*pow( fx, theta )/TMath::Gamma(1.0+theta)*TMath::Exp( -fx ) + ( 1.0-w )/( sqrt( 2.0*TMath::Pi() )*s*gn )*TMath::Exp( -0.5*arg*arg );
 
     }
   
@@ -259,14 +263,12 @@ SPEResponse::SPEResponse( PMType::Response _spetype, Double_t _params[] )
       
       params[2] = _params[2];
       params[3] = _params[3];
-
       params[4] = _params[4];
-      params[5] = _params[5];
       
-      spefunc = new TF1( "spefunc", _testfunc, 1.0/params[0]-80.0*1.0/params[0]/sqrt(1.0+params[1]), 1.0/params[0]+80.0*1.0/params[0]/sqrt(1.0+params[1]), 6 );
-      spefunc->SetParameters( params[0], params[1], params[2], params[3], params[4], params[5] );
+      spefunc = new TF1( "spefunc", _testfunc, params[0]-80.0*params[1], params[0]+80.0*params[1], 5 );
+      spefunc->SetParameters( params[0], params[1], params[2], params[3], params[4] );
 
-      nparams = 6;
+      nparams = 5;
       
     }
   

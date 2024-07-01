@@ -9,7 +9,7 @@ exe = $(srcs:.cc=)-exec
 
 cxx = g++
 
-cxxflags = -g -W -O -Wall -Wno-deprecated -fPIC -std=c++11
+cxxflags = -g -W -O -Wall -Wno-deprecated -fPIC -std=c++14
 
 cxxflags += -I$(ROOTSYS)/include/ -I/$(GSL)/include/gsl/ -I$(PMTCALIB)/src/
 

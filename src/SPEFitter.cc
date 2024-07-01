@@ -352,6 +352,13 @@ void SPEFitter::FitwDFTmethod( TH1 *hspec )
   mFFT->SetLimitedVariable( 6, "PAR3", dft.spef.params[2], dft.spef.params[2]*0.001, dft.spef.params[2]*0.01, dft.spef.params[2]*5.0 );
   mFFT->SetLimitedVariable( 7, "PAR4", dft.spef.params[3], 0.01, 0.0, 0.60 );
 
+  if ( dft.spef.nparams==5 )
+    {
+      mFFT->SetLimitedVariable( 8, "PAR5", 0.0, 0.01, 0.0, 10.0 );
+      //mFFT->SetFixedVariable( 8, "PAR5", 0.0 );
+      
+    }
+  
   if ( dft.spef.nparams==6 )
     {
       //mFFT->SetFixedVariable( 8, "PAR5", dft.spef.params[4] );

@@ -197,7 +197,7 @@ Int_t ana()
 
       nbins /= 2; // <---------- !!! Only for even nbins
       wbin = ( xmax-xmin )/(1.0*nbins-1.0);
-      //cout << xmin << ", " << xmax << ", " << nbins << ", " << wbin << endl;
+      cout << xmin << ", " << xmax << ", " << nbins << ", " << wbin << endl;
       //getchar();
       
       hSG[run] = get_histo( nbins, xmin, xmax, Form( "/Users/kalousis/PMTCalib/work/arxiv-1911.06220/data/%d/single/F1Title00000.txt", run ) );
@@ -219,7 +219,8 @@ Int_t ana()
       Double_t mu_test = fit.FindMu( hSG[run], ped.Q0, ped.s0 );
       Double_t g_test = fit.FindG( hSG[run], ped.Q0, mu_test );
       
-      Double_t p_test[4] = { 1.0/g_test, 5.0, 1.0/(0.1*g_test), 0.2 };
+      //Double_t p_test[4] = { 1.0/g_test, 5.0, 1.0/(0.1*g_test), 0.2 };
+      Double_t p_test[4] = { 7.75, 5.10, 22.5, 0.405 };
       SPEResponse gaus_test( PMType::GAMMA, p_test );
       
       DFTmethod dft( 2.0*nbins, xmin, xmax, gaus_test );
@@ -274,8 +275,8 @@ Int_t ana()
       
       /* ... */
             
-      //c1->Update();
-      //c1->WaitPrimitive();
+      c1->Update();
+      c1->WaitPrimitive();
       
       for ( Int_t i=0; i<npeaks; i++ ) delete grPE[i];
             
