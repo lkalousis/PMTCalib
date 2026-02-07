@@ -238,7 +238,8 @@ void SPEFitter::FitwNummethod( TH1 *hspec )
   mNum->SetFunction(FCA);
   
   mNum->SetLimitedVariable( 0, "Norm", num.Norm, num.Norm*0.01, num.Norm*0.75, num.Norm*1.25 ); // !!!
-  mNum->SetLimitedVariable( 1, "Q0", num.Q0, TMath::Abs( num.Q0 )*0.01+0.001*num.s0, num.Q0-0.5*num.s0, num.Q0+0.5*num.s0 );
+  //mNum->SetLimitedVariable( 1, "Q0", num.Q0, TMath::Abs( num.Q0 )*0.01+0.001*num.s0, num.Q0-0.5*num.s0, num.Q0+0.5*num.s0 );
+  mNum->SetLimitedVariable( 1, "Q0", num.Q0, 0.001*num.s0, num.Q0-0.5*num.s0, num.Q0+0.5*num.s0 );
   mNum->SetLimitedVariable( 2, "s0", num.s0, num.s0*0.01, num.s0*0.5, num.s0*1.5 );
   
   mNum->SetLimitedVariable( 3, "mu", num.mu, 0.01, num.mu*0.5, num.mu*2.0 );
@@ -342,7 +343,8 @@ void SPEFitter::FitwDFTmethod( TH1 *hspec )
   mFFT->SetFunction(FCA);
   
   mFFT->SetLimitedVariable( 0, "Norm", dft.Norm, dft.Norm*0.01, dft.Norm*0.75, dft.Norm*1.25 ); // !!!
-  mFFT->SetLimitedVariable( 1, "Q0", dft.Q0, TMath::Abs( dft.Q0 )*0.01+0.001*dft.s0, dft.Q0-0.5*dft.s0, dft.Q0+0.5*dft.s0 );
+  //mFFT->SetLimitedVariable( 1, "Q0", dft.Q0, TMath::Abs( dft.Q0 )*0.01+0.001*dft.s0, dft.Q0-0.5*dft.s0, dft.Q0+0.5*dft.s0 );
+  mFFT->SetLimitedVariable( 1, "Q0", num.Q0, 0.001*num.s0, num.Q0-0.5*num.s0, num.Q0+0.5*num.s0 );
   mFFT->SetLimitedVariable( 2, "s0", dft.s0, dft.s0*0.01, dft.s0*0.5, dft.s0*1.5 );
   
   mFFT->SetLimitedVariable( 3, "mu", dft.mu, 0.01, dft.mu*0.5, dft.mu*2.0 );
@@ -362,11 +364,11 @@ void SPEFitter::FitwDFTmethod( TH1 *hspec )
   if ( dft.spef.nparams==6 )
     {
       //mFFT->SetFixedVariable( 8, "PAR5", dft.spef.params[4] );
-      mFFT->SetLimitedVariable( 8, "PAR5", dft.spef.params[4], dft.spef.params[4]*0.001, dft.spef.params[4]*0.01, dft.spef.params[4]*5.0 );
+      mFFT->SetLimitedVariable( 8, "PAR5", dft.spef.params[4], dft.spef.params[4]*0.001, dft.spef.params[4]*0.1, dft.spef.params[4]*10.0 );
 
       //mFFT->SetFixedVariable( 9, "PAR6", dft.spef.params[5] );//dft.spef.params[5] );
-      mFFT->SetLimitedVariable( 9, "PAR6", dft.spef.params[5], 0.01, 0.0, 0.20 );
-
+      mFFT->SetLimitedVariable( 9, "PAR6", dft.spef.params[5], 0.01, 0.0, 0.50 );
+      
     }
   
   mFFT->SetMaxFunctionCalls(1.E9);

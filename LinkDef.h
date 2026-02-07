@@ -19,5 +19,6 @@
 #pragma link C++ class PMTModel+;
 
 #pragma link C++ class SPEFitter+;
+#pragma link C++ class Deconvolution+;
 
 #endif

@@ -283,8 +283,8 @@ Int_t project8()
         }
         
         //while ( run==4 ) { c1->Update(); c1->WaitPrimitive(); }
-        //c1->Update();
-        //c1->WaitPrimitive();
+        c1->Update();
+        c1->WaitPrimitive();
         
         for ( Int_t i=0; i<npeaks; i++ ) delete grPE[i];
     }

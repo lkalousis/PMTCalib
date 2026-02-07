@@ -142,7 +142,7 @@ TGraph* DFTmethod::GetGraph()
 
       Double_t y_ = GetValue( x[i] );
       
-      if ( y_<1.0e-10 ) y[i] = 1.e-4;
+      if ( y_<1.0e-15 ) y[i] = 1.e-15;
       else y[i] = y_;
       
     }
