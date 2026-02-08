@@ -186,9 +186,8 @@ TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t 
     {
       Double_t k = i*2.0*TMath::Pi()/a;
       
-      //if (k<1.0/_s0)
-      wfout1[i][0] = grRe->Eval(k);
-      //else wfout1[i][0] = 1.0;
+      if (k<=1.0/_s0) wfout1[i][0] = grRe->Eval(k);
+      else wfout1[i][0] = 1.0;
 
       //if (k<2.0/_s0)
       wfout1[i][1] = grIm->Eval(k);
