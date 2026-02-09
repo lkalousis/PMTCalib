@@ -351,14 +351,18 @@ TH1D* Deconvolution::RunSingle( TH1D* h, Double_t _Q0, Double_t _s0 )
 {
   Float_t rnd = FindMu( h, _Q0, _s0 );
   TH1D* h3 = Deconvolute( h, _Q0, _s0, rnd );
-  cout << "-> mu " << rnd << endl;
-  cout << " " << endl;
+  //cout << "-> mu " << rnd << endl;
+  //cout << " " << endl;
   return h3;
 
 }
 
 TH1D* Deconvolution::Run( TH1D* h, Int_t ntoys )
 {
+  cout << " Deconvolution starts ... " << endl;
+  cout << " " << endl;
+  //cout << "[" << flush;
+  
   Int_t nbins = h->GetXaxis()->GetNbins();
   TH1D *hnew = (TH1D*)h->Clone( "hnew" );
   
@@ -375,7 +379,7 @@ TH1D* Deconvolution::Run( TH1D* h, Int_t ntoys )
     
   for ( Int_t i=0; i<ntoys; i++ )
     {
-      cout << " Run : " << i << endl;
+      //cout << " Run : " << i << endl;
       //cout << " " << endl;
 
       Double_t Qprime = gRandom->Gaus( Q0, dQ0 );
@@ -398,6 +402,9 @@ TH1D* Deconvolution::Run( TH1D* h, Int_t ntoys )
 
       delete h4;
 
+      cout << "\r Progress: " << Form( "%.1f", i*1.0/ntoys*100.0 ) << " %";
+      std::cout.flush();
+      
     }
 
   for ( Int_t j=0; j<n; j++ ) yy[j]  = yy[j]/(1.0*ntoys);
@@ -413,15 +420,19 @@ TH1D* Deconvolution::Run( TH1D* h, Int_t ntoys )
     }
   
   delete hnew;
-
+  
   h5->SetMinimum( 0.0 );
   h5->SetMarkerStyle( 20 );
   h5->SetMarkerSize( 0.75 );
   h5->SetLineColor( kBlack );
   h5->SetMarkerColor( kBlack );
+
+  cout << " " << endl;
+  cout << " " << endl;
+  cout << " ... and now it ends !" << endl;
+ 
   
   return h5;
-
-  
+    
 }
 
