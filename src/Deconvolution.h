@@ -33,6 +33,7 @@ class Deconvolution : public TObject
 
   Double_t x1;
 
+  Double_t mu;
   Float_t mu_bf;
   
  public:
@@ -41,13 +42,13 @@ class Deconvolution : public TObject
   
   virtual ~Deconvolution();
   
-  Deconvolution( Double_t _Q0, Double_t _dQ0, Double_t _s0, Double_t _ds0 );
+  Deconvolution( Double_t _Q0, Double_t _dQ0, Double_t _s0, Double_t _ds0, Double_t _mu );
 
   TH1D* CleanUps( TH1D *h );
   Double_t fftPhase( Double_t vy, Double_t vz );
 
   TH1D* Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t _mu );
-  Float_t FindMu( TH1D* h, Double_t _Q0, Double_t _s0 );
+  Double_t GridMu( TH1D *h, Double_t _Q0, Double_t _s0 );
   TH1D* RunSingle( TH1D* h, Double_t _Q0, Double_t _s0 );
   TH1D* Run( TH1D* h, Int_t ntoys );    
     

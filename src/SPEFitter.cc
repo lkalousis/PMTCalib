@@ -175,7 +175,7 @@ void SPEFitter::SetPMTModel( PMTModel _mod )
   
 }
 
-Double_t SPEFitter::FindMu( TH1 *hspec, Double_t _Q0, Double_t _s0 )
+Double_t SPEFitter::FindMu( TH1D *hspec, Double_t _Q0, Double_t _s0 )
 {
   ped_func = new TF1( "pmt_ped", m_g, _Q0-5.0*_s0, _Q0-5.0*_s0, 3 );
   ped_func->SetParNames( "Norm", "Q", "#sigma" );

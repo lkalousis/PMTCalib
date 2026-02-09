@@ -56,7 +56,7 @@ class SPEFitter : public TObject
   Double_t ndof;
   Double_t chi2r;
 
-  Double_t FindMu( TH1 *hspec, Double_t _Q0, Double_t _s0 );
+  Double_t FindMu( TH1D *hspec, Double_t _Q0, Double_t _s0 );
   Double_t FindG( TH1 *hspec, Double_t _Q0, Double_t _mu );
 
   void SetNummethod( NumIntegration _num );

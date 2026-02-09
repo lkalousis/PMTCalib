@@ -12,13 +12,15 @@ Deconvolution::Deconvolution()
 Deconvolution::~Deconvolution()
 {}
 
-Deconvolution::Deconvolution( Double_t _Q0, Double_t _dQ0, Double_t _s0, Double_t _ds0 )
+Deconvolution::Deconvolution( Double_t _Q0, Double_t _dQ0, Double_t _s0, Double_t _ds0, Double_t _mu )
 {    
   Q0 = _Q0;
   dQ0 = _dQ0;
   
   s0 = _s0;
   ds0 = _ds0;
+
+  mu = _mu;
     
 }
 
@@ -184,9 +186,9 @@ TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t 
     {
       Double_t k = i*2.0*TMath::Pi()/a;
       
-      //if (k<=cut1)
+      if (k<=cut1)
       wfout1[i][0] = grRe->Eval(k);
-      //else wfout1[i][0] = 1.0;
+      else wfout1[i][0] = 1.0;
 
       //if (k<2.0/_s0)
       wfout1[i][1] = grIm->Eval(k);
@@ -307,20 +309,16 @@ TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t 
   
 }
 
-Float_t Deconvolution::FindMu( TH1D* h, Double_t _Q0, Double_t _s0 )
+Double_t Deconvolution::GridMu( TH1D *h, Double_t _Q0, Double_t _s0 )
 {
   Double_t tsum = 666.0;
-  
-  SPEFitter fit;
-  Double_t mu_test = fit.FindMu( h, _Q0, _s0 );
-  
-  Double_t lim1 = 0.7*mu_test;
-  Double_t lim2 = 1.3*mu_test;
+      
+  Double_t lim1 = 0.7*mu;
+  Double_t lim2 = 1.3*mu;
 
   Float_t step = 0.01;
   Int_t n1 = (lim2-lim1)/step;
-  //cout << lim1 << ", " << lim2 << endl;
-  
+    
   for ( Int_t k=0; k<=n1; k++ )
     {
       Double_t mu_k = lim1 + 1.0*k*step;
@@ -349,7 +347,7 @@ Float_t Deconvolution::FindMu( TH1D* h, Double_t _Q0, Double_t _s0 )
 
 TH1D* Deconvolution::RunSingle( TH1D* h, Double_t _Q0, Double_t _s0 )
 {
-  Float_t rnd = FindMu( h, _Q0, _s0 );
+  Float_t rnd = GridMu( h, _Q0, _s0 );
   TH1D* h3 = Deconvolute( h, _Q0, _s0, rnd );
   //cout << "-> mu " << rnd << endl;
   //cout << " " << endl;
