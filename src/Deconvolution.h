@@ -17,9 +17,9 @@
 #include "TCanvas.h"
 
 #include "SPEResponse.h"
+#include "SPEFitter.h"
 
 #include "fftw3.h"
-
 
 class Deconvolution : public TObject
 {
