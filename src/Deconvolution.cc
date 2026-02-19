@@ -121,7 +121,7 @@ TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t 
   fftw_destroy_plan( FWfftR );
 
   Double_t cut1 = 1.0/_s0;
-  //Double_t cut2 = 1.5/_s0;
+  Double_t cut2 = 1.0/_s0;
 
   Int_t n_t1 = 0;
   Double_t xx1[M];
@@ -154,7 +154,7 @@ TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t 
 
 	}
 
-      if ( k<=cut1 )
+      if ( k<=cut2 )
 	{
 	  xx2[n_t2] = k;
 	  ImSID[n_t2] = TMath::Exp( _mu + 0.5*pow( _s0*k, 2.0 ) )*amp*TMath::Sin( phi );
@@ -276,6 +276,7 @@ TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t 
       Double_t phi = fftPhase( Im, Re );
       if ( phi>TMath::Pi() ) phi -= 2.0*TMath::Pi();
 
+      //Double_t k = i*2.0*TMath::Pi()/a;
       wfout[i][0] = TMath::Log( amp );
       wfout[i][1] = phi;
                   
@@ -404,6 +405,9 @@ TH1D* Deconvolution::Run( TH1D* h, Int_t ntoys )
       std::cout.flush();
       
     }
+
+  cout << "\r Progress: " << 100 << " %";
+  std::cout.flush();
 
   for ( Int_t j=0; j<n; j++ ) yy[j]  = yy[j]/(1.0*ntoys);
   for ( Int_t j=0; j<n; j++ ) eyy[j] = sqrt( eyy[j]/(1.0*ntoys) - yy[j]*yy[j] );
