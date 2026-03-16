@@ -20,7 +20,7 @@ incflags += -I$(ROOTSYS)/include/ -I/$(GSL)/include/gsl/ -I/$(PMTCALIB)/src/ -I/
 
 so = g++
 soflags = -g -shared -fPIC
-libs = $(ROOTLIBS) -lMinuit -lMinuit2 -lGeom -lXMLIO -lfftw3 -L/$(GSL)/lib -lgsl -lgslcblas 
+libs = $(shell root-config --glibs) -lMinuit -lMinuit2 -lGeom -lXMLIO -lfftw3 -L/$(GSL)/lib -lgsl -lgslcblas 
 
 all	: start $(dict).cc $(objs) $(lib) end
 
