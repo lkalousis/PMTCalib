@@ -122,7 +122,7 @@ TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t 
 
   Double_t cut1 = 1.0/_s0;
   Double_t cut2 = 1.0/_s0;
-
+  
   Int_t n_t1 = 0;
   Double_t xx1[M];
   Double_t ReSID[M];
@@ -149,7 +149,7 @@ TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t 
       if ( k<=cut1 )
 	{
 	  xx1[n_t1] = k;
-	  ReSID[n_t1] = TMath::Exp( _mu + 0.5*pow( _s0*k, 2.0 ) )*amp*TMath::Cos( phi );
+	  ReSID[n_t1] = TMath::Exp( _mu+0.5*pow( _s0*k, 2.0 ) )*amp*TMath::Cos( phi );
 	  n_t1++;
 
 	}
@@ -157,7 +157,7 @@ TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t 
       if ( k<=cut2 )
 	{
 	  xx2[n_t2] = k;
-	  ImSID[n_t2] = TMath::Exp( _mu + 0.5*pow( _s0*k, 2.0 ) )*amp*TMath::Sin( phi );
+	  ImSID[n_t2] = TMath::Exp( _mu+0.5*pow( _s0*k, 2.0 ) )*amp*TMath::Sin( phi );
 	  n_t2++;
 
 	}
@@ -190,7 +190,7 @@ TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t 
       wfout1[i][0] = grRe->Eval(k);
       else wfout1[i][0] = 1.0;
 
-      //if (k<2.0/_s0)
+      //if (k<=cut2)
       wfout1[i][1] = grIm->Eval(k);
       //else wfout1[i][1] = 0.0;
       
@@ -278,7 +278,10 @@ TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t 
 
       //Double_t k = i*2.0*TMath::Pi()/a;
       wfout[i][0] = TMath::Log( amp );
+      //else  wfout[i][0] = -_mu;
+      
       wfout[i][1] = phi;
+      //else wfout[i][1] = 0.0;
                   
     }
 
