@@ -27,7 +27,9 @@ class Occupancy : public TObject
 
   Double_t Gauss1( Float_t x );
   Float_t FindG( TH1D* _h, Float_t f );
-    
+
+  Float_t mu_bf;
+  
   ClassDef( Occupancy, 1 )
   
 };

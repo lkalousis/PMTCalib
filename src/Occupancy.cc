@@ -81,12 +81,12 @@ Float_t Occupancy::FindG( TH1D* _h, Float_t f )
   Float_t Ncut = gr2->Eval( cut );
   Float_t N0 = Ncut/f;
   Double_t Ntot = _h->Integral();  
-  Float_t mu = -TMath::Log( N0/Ntot );;
+  mu_bf = -TMath::Log( N0/Ntot );;
 
   delete gr1;
   delete gr2;
 
-  Double_t G = ( _h->GetMean()-Q0 )/mu;
+  Double_t G = ( _h->GetMean()-Q0 )/mu_bf;
 
   return G;
   

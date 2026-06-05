@@ -173,6 +173,10 @@ TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t 
   ReSID[n_t1] = 1.0;
   n_t1++;
 
+  //xx2[n_t2] = 4.0/s0;
+  //ImSID[n_t2] = 0.0;
+  //n_t2++;
+  
   xx2[n_t2] = k0;
   ImSID[n_t2] = 0.0;
   n_t2++;
@@ -189,7 +193,7 @@ TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t 
       if (k<=cut1)
       wfout1[i][0] = grRe->Eval(k);
       else wfout1[i][0] = 1.0;
-
+      
       //if (k<=cut2)
       wfout1[i][1] = grIm->Eval(k);
       //else wfout1[i][1] = 0.0;
