@@ -102,6 +102,152 @@ Double_t Deconvolution::fftPhase( Double_t vy, Double_t vz )
 
 }
 
+TH1D* Deconvolution::Deconvolute2( TH1D* h, Double_t _Q0, Double_t _s0 )//, Double_t _mu )
+{
+  TH1D *h2 = CleanUps( h );
+  UInt_t N = h2->GetXaxis()->GetNbins();
+  Double_t wbin = h2->GetBinWidth(1);
+  _Q0 = _Q0 - x1;
+  
+  UInt_t M = N/2+1;
+  Double_t a = N*wbin;
+
+  fftw_plan FWfftR;
+  Double_t wfinR[N];
+  fftw_complex wfoutR[M];
+  
+  for ( UInt_t i=0; i<N; i++ ) wfinR[i] = h2->GetBinContent(i+1);
+
+  FWfftR = fftw_plan_dft_r2c_1d( N, wfinR, wfoutR, FFTW_ESTIMATE );
+  fftw_execute( FWfftR );
+  fftw_destroy_plan( FWfftR );
+
+  Double_t cut1 = 1.0/_s0;
+  Double_t cut2 = 1.0/_s0;
+  
+  Int_t n_t1 = 0;
+  Double_t xx1[M];
+  Double_t ReSID[M];
+
+  Int_t n_t2 = 0;
+  Double_t xx2[M];
+  Double_t ImSID[M];
+
+  Double_t C1;
+  Double_t D;
+  
+  for ( UInt_t i=0; i<M; i++ )
+    {
+      Double_t Re = wfoutR[i][0];
+      Double_t Im = wfoutR[i][1];
+      
+      Double_t amp = sqrt( pow( Re, 2.0 )+pow( Im, 2.0 ) );
+      Double_t phiR = fftPhase( Im, Re );
+      
+      Double_t k = i*2.0*TMath::Pi()/a;
+            
+      Double_t phi = phiR + _Q0*k;
+      phi = fftPhase( TMath::Sin(phi), TMath::Cos(phi) );
+      if ( phi>TMath::Pi() ) phi -= 2.0*TMath::Pi();
+
+      if ( k<=cut1 )
+	{
+	  xx1[n_t1] = k;
+	  ReSID[n_t1] = TMath::Exp( 0.5*pow( _s0*k, 2.0 ) )*amp*TMath::Cos( phi );
+	  C1 = ReSID[n_t1];
+	  n_t1++;
+	  
+	}
+      else
+	{
+	  xx1[n_t1] = k;
+	  ReSID[n_t1] = C1; //TMath::Exp( -_mu );
+	  n_t1++;
+
+	}
+      
+      if ( k<=cut2 )
+	{
+	  xx2[n_t2] = k;
+	  ImSID[n_t2] = TMath::Exp( 0.5*pow( _s0*k, 2.0 ) )*amp*TMath::Sin( phi );
+	  D = ImSID[n_t2] * k;
+	  n_t2++;
+	  
+	}
+      else
+	{
+	  xx2[n_t2] = k;
+	  ImSID[n_t2] = D/k;
+	  n_t2++;
+	  
+	}
+            
+    }
+
+  grRe = new TGraph( n_t1, xx1, ReSID );
+  grIm = new TGraph( n_t2, xx2, ImSID );
+
+  mu_est = -TMath::Log( C1 );
+
+
+  fftw_complex wfout1[M];
+
+  for ( UInt_t i=0; i<M; i++ )
+    {
+      Double_t k = i*2.0*TMath::Pi()/a;
+      
+      wfout1[i][0] = grRe->Eval(k);
+      wfout1[i][1] = grIm->Eval(k);
+
+    }
+
+  fftw_complex wfout[M];
+  Double_t fft[N];
+
+  for ( UInt_t i=0; i<M; i++ )
+    {
+      Double_t Re = wfout1[i][0];
+      Double_t Im = wfout1[i][1];
+
+      Double_t amp = sqrt( pow( Re, 2.0 )+pow( Im, 2.0 ) );
+      Double_t phi = fftPhase( Im, Re );
+      if ( phi>TMath::Pi() ) phi -= 2.0*TMath::Pi();
+      
+      wfout[i][0] = mu_est + TMath::Log( amp );
+      //cout << ":" << mu_est << endl;
+      //getchar();
+      //else  wfout[i][0] = -_mu;
+      
+      wfout[i][1] = phi;
+                        
+    }
+
+   fftw_plan BW;
+  BW = fftw_plan_dft_c2r_1d( N, wfout, fft, FFTW_ESTIMATE );
+  fftw_execute( BW );
+  fftw_destroy_plan( BW );
+
+  Double_t x2 = -wbin/2.0+N*wbin;  
+  TH1D *h5 = new TH1D( "h5", "SPE project; Charge; Entries", N, -wbin/2.0, x2 );
+  
+  for ( UInt_t i=0; i<N; i++ )
+    {
+      Double_t xx = h5->GetBinCenter( i+1 );
+      Double_t yy = fft[i]/(1.0*N*1.0);
+      
+      if ( yy>1.0e-10 )
+      h5->Fill( xx, yy );
+      else h5->Fill( xx, 0.0 );
+      
+    }
+
+  delete h2;
+
+  return h5;
+  
+  
+}
+
 TH1D* Deconvolution::Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t _mu )
 {
   TH1D *h2 = CleanUps( h );
@@ -416,6 +562,88 @@ TH1D* Deconvolution::Run( TH1D* h, Int_t ntoys )
     }
 
   cout << "\r Progress: " << 100 << " %";
+  std::cout.flush();
+
+  for ( Int_t j=0; j<n; j++ ) yy[j]  = yy[j]/(1.0*ntoys);
+  for ( Int_t j=0; j<n; j++ ) eyy[j] = sqrt( eyy[j]/(1.0*ntoys) - yy[j]*yy[j] );
+
+  TH1D *h5 = new TH1D( "h5", "Project", n, -wbin/2.0, -wbin/2+1.0*n*wbin );
+  
+  for ( Int_t j=0; j<n; j++ )
+    {
+      h5->SetBinContent( j+1, yy[j] );
+      h5->SetBinError( j+1, eyy[j] );
+      
+    }
+  
+  delete hnew;
+  
+  h5->SetMinimum( 0.0 );
+  h5->SetMarkerStyle( 20 );
+  h5->SetMarkerSize( 0.75 );
+  h5->SetLineColor( kBlack );
+  h5->SetMarkerColor( kBlack );
+
+  cout << " " << endl;
+  cout << " " << endl;
+  cout << " ... and now it ends !" << endl;
+ 
+  
+  return h5;
+    
+}
+
+TH1D* Deconvolution::Run2( TH1D* h, Int_t ntoys )
+{
+  cout << " Deconvolution starts ... " << endl;
+  cout << " " << endl;
+  //cout << "[" << flush;
+  
+  Int_t nbins = h->GetXaxis()->GetNbins();
+  TH1D *hnew = (TH1D*)h->Clone( "hnew" );
+  
+  Double_t xx[6000] = { 0.0 };
+  Double_t yy[6000] = { 0.0 };
+  Double_t eyy[6000] = { 0.0 };
+
+  TH1D *h4 = Deconvolute2( h, Q0, s0 );
+  Int_t n = h4->GetXaxis()->GetNbins();
+  Double_t wbin = h4->GetBinWidth(1);
+  
+  for ( Int_t i=0; i<n; i++ ) xx[i] = h4->GetXaxis()->GetBinCenter(i+1);
+  delete h4;
+    
+  for ( Int_t i=0; i<ntoys; i++ )
+    {
+      //cout << " Run : " << i << endl;
+      //cout << " " << endl;
+
+      Double_t Qprime = gRandom->Gaus( Q0, dQ0 );
+      Double_t sprime = gRandom->Gaus( s0, ds0 );
+
+      hnew->Reset();
+      
+      for ( Int_t j=0; j<nbins; j++ )
+	{
+	  Double_t _n = h->GetBinContent( j+1 );
+	  Double_t _nprime = gRandom->Poisson( _n );
+	  if ( _n!=0 && _nprime==0 ) _nprime = 1.0e-19;
+	  hnew->SetBinContent( j+1, _nprime );
+	  
+	}
+      
+      TH1D* h4 = Deconvolute2( hnew, Qprime, sprime );
+      for ( Int_t j=0; j<n; j++ )  yy[j] += h4->GetBinContent(j+1);
+      for ( Int_t j=0; j<n; j++ ) eyy[j] += h4->GetBinContent(j+1)*h4->GetBinContent(j+1);
+
+      delete h4;
+
+      cout << "\r Progress 2 : " << Form( "%.1f", i*1.0/ntoys*100.0 ) << " %";
+      std::cout.flush();
+      
+    }
+
+  cout << "\r Progress 2 : " << 100 << " %";
   std::cout.flush();
 
   for ( Int_t j=0; j<n; j++ ) yy[j]  = yy[j]/(1.0*ntoys);

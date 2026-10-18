@@ -46,12 +46,19 @@ class Deconvolution : public TObject
 
   TH1D* CleanUps( TH1D *h );
   Double_t fftPhase( Double_t vy, Double_t vz );
-
+    
+  TH1D* Deconvolute2( TH1D* h, Double_t _Q0, Double_t _s0 );//, Double_t _mu )
+  TH1D* Run2( TH1D* h, Int_t ntoys );
+    
   TH1D* Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t _mu );
   Double_t GridMu( TH1D *h, Double_t _Q0, Double_t _s0 );
   TH1D* RunSingle( TH1D* h, Double_t _Q0, Double_t _s0 );
   TH1D* Run( TH1D* h, Int_t ntoys );    
-    
+
+  TGraph* grRe;
+  TGraph* grIm;
+  Double_t mu_est;
+  
   ClassDef( Deconvolution, 1 )
         
 };
