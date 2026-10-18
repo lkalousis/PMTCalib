@@ -22,11 +22,13 @@ DFTmethod::DFTmethod( Int_t _nbins, Double_t _xmin, Double_t _xmax, SPEResponse 
   step = ( xmax-xmin )/( 1.0*nbins*1.0 );
   
   spef = _spef;
-    
-  N = 2*nbins+60; 
-  M = N/2+1;
-
   
+  //N = 2*nbins+60;
+  if ( nbins % 2 == 0 ) N = nbins + 60;
+  else N = nbins + 61;
+  
+  M = N/2+1;
+    
   xvalues.clear();
   
   for ( UInt_t i=0; i<N; i++ )

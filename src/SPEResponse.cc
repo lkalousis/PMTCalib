@@ -33,6 +33,48 @@ Double_t _gausexpfunc( Double_t *x, Double_t *par )
   
 }
 
+Double_t _gaus2( Double_t *x, Double_t *par )
+{
+  Double_t xx = x[0];
+    
+  Double_t Q1 = par[0];
+  Double_t s1 = par[1];
+    
+  //Double_t alpha = par[2];
+  //Double_t w1 = par[3];
+  
+  //Double_t w2 = par[4];
+  //Double_t Q2 = par[5];
+  //Double_t s2 = par[6];
+
+  Double_t Q2 = par[2];
+  Double_t s2 = par[4];
+  Double_t w = par[3];
+  
+  Double_t result = 0.0;
+  if ( xx>=0.0 )
+    {
+      Double_t arg1 = 0.0; 
+      if ( s1!=0.0 ) arg1 = ( xx - Q1 )/s1;    
+      else cout << "Error: The code tries to divide by zero." << endl;
+
+      Double_t arg2 = 0.0; 
+      if ( s2!=0.0 ) arg2 = ( xx - Q2 )/s2;    
+      else cout << "Error: The code tries to divide by zero." << endl;
+      
+      Double_t gn1 = 0.5*TMath::Erfc( -Q1/( sqrt(2.0)*s1 ) );
+      Double_t gn2 = 0.5*TMath::Erfc( -Q2/( sqrt(2.0)*s2 ) );
+      
+      result = //w1*alpha*TMath::Exp( -xx*alpha ) +
+	w/( sqrt( 2.0*TMath::Pi() )*s2*gn2 )*TMath::Exp( -0.5*arg2*arg2 )
+	+ ( 1.0-w )/( sqrt( 2.0*TMath::Pi() )*s1*gn1 )*TMath::Exp( -0.5*arg1*arg1 );
+
+    }
+  
+  return result;
+  
+}
+
 Double_t _gaus2expfunc( Double_t *x, Double_t *par )
 {
   Double_t xx = x[0];
@@ -300,7 +342,25 @@ SPEResponse::SPEResponse( PMType::Response _spetype, Double_t _params[] )
       nparams = 6;
       
     }
-   
+
+    if ( spetype==PMType::GAUSS2 )
+    {
+      params[0] = _params[0];
+      params[1] = _params[1];
+      
+      params[2] = _params[2];
+      params[3] = _params[3];
+      params[4] = _params[4];
+      //params[5] = _params[5];
+      //params[6] = _params[6];
+            
+      spefunc = new TF1( "spefunc", _gaus2, params[0]-80.0*params[1], params[0]+80.0*params[1], 5 );
+      spefunc->SetParameters( params[0], params[1], params[2], params[3], params[4] );//, params[5], params[6] );
+
+      nparams = 5;
+      
+    }
+    
    if ( spetype==PMType::TEST )
     {
       params[0] = _params[0];

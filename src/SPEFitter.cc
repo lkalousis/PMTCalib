@@ -351,13 +351,14 @@ void SPEFitter::FitwDFTmethod( TH1 *hspec )
   
   mFFT->SetLimitedVariable( 4, "PAR1", dft.spef.params[0], dft.spef.params[0]*0.001, dft.spef.params[0]*0.01, dft.spef.params[0]*100.0 );
   mFFT->SetLimitedVariable( 5, "PAR2", dft.spef.params[1], dft.spef.params[1]*0.001, dft.spef.params[1]*0.0, dft.spef.params[1]*8.0 );
+  
   mFFT->SetLimitedVariable( 6, "PAR3", dft.spef.params[2], dft.spef.params[2]*0.001, dft.spef.params[2]*0.01, dft.spef.params[2]*100.0 );
   mFFT->SetLimitedVariable( 7, "PAR4", dft.spef.params[3], 0.01, 0.0, 0.60 );
-  //mFFT->SetFixedVariable( 7, "PAR4", dft.spef.params[3] );
-
+  
   if ( dft.spef.nparams==5 )
     {
-      mFFT->SetLimitedVariable( 8, "PAR5", 0.0, 0.01, 0.0, 10.0 );
+      mFFT->SetLimitedVariable( 8, "PAR5", dft.spef.params[4], dft.spef.params[4]*0.001, dft.spef.params[4]*0.01, dft.spef.params[4]*100.0 );
+      //mFFT->SetLimitedVariable( 8, "PAR5", 0.2, 0.01, 0.0, 10.0 );
       //mFFT->SetFixedVariable( 8, "PAR5", 0.0 );
       
     }
@@ -369,6 +370,14 @@ void SPEFitter::FitwDFTmethod( TH1 *hspec )
       
       //mFFT->SetFixedVariable( 9, "PAR6", dft.spef.params[5] );
       mFFT->SetLimitedVariable( 9, "PAR6", dft.spef.params[5], 0.01, 0.0, 0.30 );
+      
+    }
+
+   if ( dft.spef.nparams==7 )
+    {
+      mFFT->SetLimitedVariable( 8, "PAR5", dft.spef.params[4], 0.01, 0.0, 0.30 );
+      mFFT->SetLimitedVariable( 9, "PAR6", dft.spef.params[5], dft.spef.params[5]*0.001, dft.spef.params[5]*0.01, dft.spef.params[5]*100.0 );
+      mFFT->SetLimitedVariable( 10, "PAR7", dft.spef.params[6], dft.spef.params[6]*0.001, dft.spef.params[6]*0.01, dft.spef.params[6]*100.0 );
       
     }
   
