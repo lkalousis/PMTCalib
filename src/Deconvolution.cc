@@ -222,7 +222,7 @@ TH1D* Deconvolution::Deconvolute2( TH1D* h, Double_t _Q0, Double_t _s0 )//, Doub
                         
     }
 
-   fftw_plan BW;
+  fftw_plan BW;
   BW = fftw_plan_dft_c2r_1d( N, wfout, fft, FFTW_ESTIMATE );
   fftw_execute( BW );
   fftw_destroy_plan( BW );
@@ -241,6 +241,9 @@ TH1D* Deconvolution::Deconvolute2( TH1D* h, Double_t _Q0, Double_t _s0 )//, Doub
       
     }
 
+  h5->SetBinContent( 1, 2.0*h5->GetBinContent(1) );
+  h5->SetBinError( 1, 2.0*h5->GetBinError(1) );
+  
   delete h2;
 
   return h5;
@@ -649,7 +652,7 @@ TH1D* Deconvolution::Run2( TH1D* h, Int_t ntoys )
   for ( Int_t j=0; j<n; j++ ) yy[j]  = yy[j]/(1.0*ntoys);
   for ( Int_t j=0; j<n; j++ ) eyy[j] = sqrt( eyy[j]/(1.0*ntoys) - yy[j]*yy[j] );
 
-  TH1D *h5 = new TH1D( "h5", "Project", n, -wbin/2.0, -wbin/2+1.0*n*wbin );
+  TH1D *h5 = new TH1D( "h5", "; Charge in A.U.", n, -wbin/2.0, -wbin/2+1.0*n*wbin );
   
   for ( Int_t j=0; j<n; j++ )
     {
