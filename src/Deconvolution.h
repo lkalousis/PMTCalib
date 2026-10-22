@@ -43,6 +43,7 @@ class Deconvolution : public TObject
   virtual ~Deconvolution();
   
   Deconvolution( Double_t _Q0, Double_t _dQ0, Double_t _s0, Double_t _ds0, Double_t _mu );
+  Deconvolution( Double_t _Q0, Double_t _dQ0, Double_t _s0, Double_t _ds0 );
 
   TH1D* CleanUps( TH1D *h );
   Double_t fftPhase( Double_t vy, Double_t vz );

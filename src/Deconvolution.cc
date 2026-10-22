@@ -26,6 +26,16 @@ Deconvolution::Deconvolution( Double_t _Q0, Double_t _dQ0, Double_t _s0, Double_
     
 }
 
+Deconvolution::Deconvolution( Double_t _Q0, Double_t _dQ0, Double_t _s0, Double_t _ds0 )
+{    
+  Q0 = _Q0;
+  dQ0 = _dQ0;
+  
+  s0 = _s0;
+  ds0 = _ds0;
+
+}
+
 TH1D* Deconvolution::CleanUps( TH1D *h )
 {
   TH1D *h1 = (TH1D*)h->Clone( "h1" );
