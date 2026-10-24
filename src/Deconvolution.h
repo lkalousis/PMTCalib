@@ -30,11 +30,11 @@ class Deconvolution : public TObject
   
   Double_t s0;
   Double_t ds0;
-
+  
+  Int_t N;
   Double_t x1;
-
-  Double_t mu;
-  Float_t mu_bf;
+  Double_t x2;
+  Double_t wbin;
   
  public:
   
@@ -42,24 +42,26 @@ class Deconvolution : public TObject
   
   virtual ~Deconvolution();
   
-  Deconvolution( Double_t _Q0, Double_t _dQ0, Double_t _s0, Double_t _ds0, Double_t _mu );
   Deconvolution( Double_t _Q0, Double_t _dQ0, Double_t _s0, Double_t _ds0 );
-
-  TH1D* CleanUps( TH1D *h );
+    
+  void CleanUps( TH1D *h );
   Double_t fftPhase( Double_t vy, Double_t vz );
-    
-  TH1D* Deconvolute2( TH1D* h, Double_t _Q0, Double_t _s0 );//, Double_t _mu )
-  TH1D* Run2( TH1D* h, Int_t ntoys );
-    
-  TH1D* Deconvolute( TH1D* h, Double_t _Q0, Double_t _s0, Double_t _mu );
-  Double_t GridMu( TH1D *h, Double_t _Q0, Double_t _s0 );
-  TH1D* RunSingle( TH1D* h, Double_t _Q0, Double_t _s0 );
-  TH1D* Run( TH1D* h, Int_t ntoys );    
-
+  void Deconvolute( Double_t _Q0, Double_t _s0 );
+  TH1D* Run( TH1D* h, Int_t ntoys );
+  
   TGraph* grRe;
   TGraph* grIm;
-  Double_t mu_est;
   
+  Double_t mu_est;
+
+  TH1D *h1;
+  TH1D *h2;
+
+  TH1D *h3;
+  TH1D *h4;
+  
+  TH1D *h5;
+    
   ClassDef( Deconvolution, 1 )
         
 };
