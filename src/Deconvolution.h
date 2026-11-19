@@ -60,7 +60,7 @@ class Deconvolution : public TObject
   
   Double_t low_lim;
   Double_t hi_lim;
-  //Double_t cut;
+  Double_t cut;
     
   Double_t mu_est;
   Double_t g_est;
