@@ -37,9 +37,13 @@ Deconvolution::Deconvolution( Double_t _Q0, Double_t _dQ0, Double_t _s0, Double_
   
   s0 = _s0;
   ds0 = _ds0;
-    
+
+  low_lim = 0.75/s0;
+  hi_lim  = 1.25/s0;
+  cout << low_lim << ", " << hi_lim << endl;
+  
   h1 = NULL;
-  h2= NULL;
+  h2 = NULL;
 
   h3 = NULL;
   h4 = NULL;
@@ -128,7 +132,8 @@ Double_t Deconvolution::fftPhase( Double_t vy, Double_t vz )
 Double_t Deconvolution::FindLimit( TH1D* h )
 {
   //CleanUps( h );
-  
+  //Double_t newQ0 = Q0-x1;
+   
   TH1D *h7;
   h7 = (TH1D*)h->Clone( "h7" );
     
@@ -172,12 +177,9 @@ Double_t Deconvolution::FindLimit( TH1D* h )
   grAmp = new TGraph( n_t1, xx1, Amp );
   grBg = new TGraph( n_t1, xx1, Bg );
   
-  //Occupancy occ( Q0, s0 );
+  //Occupancy occ( newQ0, s0 );
+  //Float_t G = occ.FindG( h2, 0.2 );
   //Float_t sigmaG = occ.FindSigma( h2, 0.2 );
-  
-  low_lim = 0.75/s0;//7.0/sigmaG;
-  hi_lim  = 2.00/s0;//1.5/s0;
-  cout << low_lim << " hi_lim : " << hi_lim << endl;
   
   Double_t scale1 = 0.0;
   Double_t scale2 = 0.0;
@@ -189,15 +191,20 @@ Double_t Deconvolution::FindLimit( TH1D* h )
       if ( k>=low_lim && k<hi_lim ) scale2 += Bg[i];
       
     }
-
-  Double_t C = scale1/scale2;
   
-  mu_est = -TMath::Log( C );
-  g_est  = ( h->GetMean()-Q0 )/mu_est;
+  //mu_est = occ.mu_bf;
+  Double_t C = scale1/scale2;//TMath::Exp( -occ.mu_bf );
+  //cout << C << endl;
+  //cout << "TrT : " << scale1/scale2 << endl;
+  //getchar();
+  
+  //mu_est = -TMath::Log( C );
+  g_est  = ( h->GetMean()-Q0 )/mu_est;//*G/G; // OH LORD !!!
   Double_t sigmaR = h->GetRMS();
   Double_t sigmaG2 = ( pow( sigmaR, 2.0 )-pow( s0, 2.0 ) )/mu_est - pow( g_est, 2.0 );
   s_est = sqrt( sigmaG2 );
-    
+  //mu_est = occ.mu_bf*G/G;
+  
   Double_t Bg_scale[M];
   
   for ( Int_t i=0; i<M; i++ )
@@ -224,10 +231,10 @@ Double_t Deconvolution::FindLimit( TH1D* h )
 	  if ( v2!=0.0 ) dev = ( v1-v2 )/v2;
 	  //cout << "dev:" << dev << endl;
 	  
-	  if ( dev>=0.0075 )
+	  if ( dev>=0.015 )
 	    {
 	      cut = k;
-	      cout << "Got you ! " << cut << endl;
+	      cout << "Got you ! " << cut << ", " << 0.75/s0 << ", " << 1.0/s0 << endl;
 	      break;
 	      	      
 	    }
@@ -235,7 +242,7 @@ Double_t Deconvolution::FindLimit( TH1D* h )
 	}
       
     }
-
+  
   delete h7;
   
   return cut;
@@ -245,6 +252,10 @@ Double_t Deconvolution::FindLimit( TH1D* h )
 void Deconvolution::Deconvolute( Double_t _Q0, Double_t _s0, Double_t _lim )
 {
   _Q0 = _Q0 - x1; 
+  
+  //Occupancy occ( _Q0, _s0 );
+  //Float_t G = occ.FindG( h2, 0.2 );
+  //mu_est = occ.mu_bf*G/G;
   
   Int_t M = N/2+1;
   Double_t a = N*wbin;
@@ -337,7 +348,7 @@ void Deconvolution::Deconvolute( Double_t _Q0, Double_t _s0, Double_t _lim )
   grRe = new TGraph( n_t1, xx1, ReSID );
   grIm = new TGraph( n_t2, xx2, ImSID );
   
-  mu_est = -TMath::Log( C1 );
+  //mu_est = -TMath::Log( C1 );
   //cout << " !!! " << mu_est << endl;
 
   fftw_complex wfout1[M];
@@ -363,7 +374,7 @@ void Deconvolution::Deconvolute( Double_t _Q0, Double_t _s0, Double_t _lim )
       Double_t phi = fftPhase( Im, Re );
       if ( phi>TMath::Pi() ) phi -= 2.0*TMath::Pi();
       
-      wfout[i][0] = mu_est + TMath::Log( amp );
+      wfout[i][0] = TMath::Log( amp ) + mu_est;
       wfout[i][1] = phi;
                         
     }
@@ -385,8 +396,8 @@ void Deconvolution::Deconvolute( Double_t _Q0, Double_t _s0, Double_t _lim )
       
     }
   
-  h4->SetBinContent( 1, 2.0*h4->GetBinContent(1) );
-  h4->SetBinError( 1, 2.0*h4->GetBinError(1) );
+  //h4->SetBinContent( 1, 2.0*h4->GetBinContent(1) );
+  //h4->SetBinError( 1, 2.0*h4->GetBinError(1) );
   
   return;
     
@@ -404,7 +415,9 @@ TH1D* Deconvolution::Run( TH1D* h, Int_t ntoys )
   Double_t yy[6000] = { 0.0 };
   Double_t eyy[6000] = { 0.0 };
   Double_t limit = FindLimit( h2 );
-  cout << low_lim << ", " << hi_lim << ", " << limit << endl; //getchar();
+  //Double_t limit = low_lim/0.75;
+
+  //cout << low_lim << ", " << hi_lim << ", " << limit << endl; //getchar();
   
   for ( Int_t i=0; i<N; i++ ) xx[i] = h2->GetXaxis()->GetBinCenter(i+1);
       

@@ -81,7 +81,7 @@ Float_t Occupancy::FindG( TH1D* _h, Float_t f )
   Float_t Ncut = gr2->Eval( cut );
   Float_t N0 = Ncut/f;
   Double_t Ntot = _h->Integral();  
-  mu_bf = -TMath::Log( N0/Ntot );;
+  mu_bf = -TMath::Log( N0/Ntot );
 
   delete gr1;
   delete gr2;
