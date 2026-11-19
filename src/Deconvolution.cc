@@ -154,6 +154,9 @@ Double_t Deconvolution::FindLimit( TH1D* h )
   Double_t xx1[M];
   Double_t Amp[M];
   Double_t Bg[M];
+
+  Double_t Phi_R[M];
+  Double_t Phi_Bg[M];
      
   for ( Int_t i=0; i<M; i++ )
     {
@@ -166,7 +169,7 @@ Double_t Deconvolution::FindLimit( TH1D* h )
       xx1[n_t1] = k;
       Amp[n_t1] = amp;
       Bg[n_t1] = TMath::Exp( -0.5*pow( s0*k, 2.0 ) );
-            
+      
       n_t1++;
       
     }
@@ -423,10 +426,7 @@ TH1D* Deconvolution::Run( TH1D* h, Int_t ntoys )
   
   for ( Int_t j=0; j<N; j++ ) yy[j]  = yy[j]/(1.0*ntoys);
   for ( Int_t j=0; j<N; j++ ) eyy[j] = sqrt( eyy[j]/(1.0*ntoys) - yy[j]*yy[j] );
-
-  //Double_t unc = 0.02;
-  //for ( Int_t j=0; j<N; j++ ) eyy[j] = sqrt( pow( eyy[j], 2.0 )+pow( yy[j]*unc, 2.0 ) );
-    
+  
   for ( Int_t j=0; j<N; j++ )
     {
       h5->SetBinContent( j+1, yy[j] );
