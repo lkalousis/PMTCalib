@@ -59,7 +59,7 @@ class Deconvolution : public TObject
   TGraph* grBg_scale;
   
   TGraph* grPhiR;
-  TGraph* grPhiB;
+  TGraph* grPhiBg;
     
   Double_t low_lim;
   Double_t hi_lim;

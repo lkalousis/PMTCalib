@@ -154,10 +154,7 @@ Double_t Deconvolution::FindLimit( TH1D* h )
   Double_t xx1[M];
   Double_t Amp[M];
   Double_t Bg[M];
-
-  Double_t Phi_R[M];
-  Double_t Phi_Bg[M];
-     
+       
   for ( Int_t i=0; i<M; i++ )
     {
       Double_t k = i*2.0*TMath::Pi()/a;
@@ -268,6 +265,9 @@ void Deconvolution::Deconvolute( Double_t _Q0, Double_t _s0, Double_t _lim )
 
   Double_t C1;
   Double_t D;
+
+  Double_t Phi_R[M];
+  Double_t Phi_Bg[M];
   
   for ( Int_t i=0; i<M; i++ )
     {
@@ -282,7 +282,7 @@ void Deconvolution::Deconvolute( Double_t _Q0, Double_t _s0, Double_t _lim )
       Double_t phi = phiR + _Q0*k;
       phi = fftPhase( TMath::Sin(phi), TMath::Cos(phi) );
       if ( phi>TMath::Pi() ) phi -= 2.0*TMath::Pi();
-
+      
       if ( k<=cut1 )
 	{
 	  xx1[n_t1] = k;
@@ -314,11 +314,21 @@ void Deconvolution::Deconvolute( Double_t _Q0, Double_t _s0, Double_t _lim )
 	  n_t2++;
 	  
 	}
+
+      Phi_R[i] = phiR;
+      
+      Double_t phi2 = - _Q0*k;
+      phi2 = fftPhase( TMath::Sin(phi2), TMath::Cos(phi2) );
+      if ( phi2>TMath::Pi() ) phi2 -= 2.0*TMath::Pi();
+      Phi_Bg[i] = phi2;
             
     }
 
   grRe = new TGraph( n_t1, xx1, ReSID );
   grIm = new TGraph( n_t2, xx2, ImSID );
+
+  grPhiR = new TGraph( n_t1, xx1, Phi_R );
+  grPhiBg = new TGraph( n_t1, xx1, Phi_Bg );
   
   //mu_est = -TMath::Log( C1 );
   //cout << " !!! " << mu_est << endl;
