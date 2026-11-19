@@ -281,7 +281,7 @@ Int_t ana()
       cout << " BF Gain : " << Gfit  << endl;
       //cout << "" << endl;
 
-      if ( fit.chi2r<3.0 )
+      if ( fit.chi2r<2.0 )
 	{
 	  h_g->Fill( Gfit );
 	  h_chi2->Fill(fit.chi2r);

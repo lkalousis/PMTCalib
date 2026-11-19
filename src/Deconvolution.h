@@ -18,6 +18,7 @@
 
 #include "SPEResponse.h"
 #include "SPEFitter.h"
+#include "Occupancy.h"
 
 #include "fftw3.h"
 
@@ -46,14 +47,25 @@ class Deconvolution : public TObject
     
   void CleanUps( TH1D *h );
   Double_t fftPhase( Double_t vy, Double_t vz );
-  void Deconvolute( Double_t _Q0, Double_t _s0 );
+  Double_t FindLimit( TH1D* h );
+  void Deconvolute( Double_t _Q0, Double_t _s0, Double_t _lim );
   TH1D* Run( TH1D* h, Int_t ntoys );
-  
+    
   TGraph* grRe;
   TGraph* grIm;
   
+  TGraph* grAmp;
+  TGraph* grBg;
+  TGraph* grBg_scale;
+  
+  Double_t low_lim;
+  Double_t hi_lim;
+  //Double_t cut;
+    
   Double_t mu_est;
-
+  Double_t g_est;
+  Double_t s_est;
+  
   TH1D *h1;
   TH1D *h2;
 

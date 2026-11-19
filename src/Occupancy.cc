@@ -91,3 +91,17 @@ Float_t Occupancy::FindG( TH1D* _h, Float_t f )
   return G;
   
 }
+
+Float_t Occupancy::FindSigma( TH1D* _h, Float_t f )
+{
+  Float_t _G = FindG( _h, f );
+
+  Float_t sigmaR = _h->GetRMS();
+  Float_t sigmaG2 = ( pow( sigmaR, 2.0 )-pow( s0, 2.0 ) )/mu_bf - pow( _G, 2.0 );
+  Float_t sigmaG = sqrt( sigmaG2 );
+  //cout << sigmaG << endl;
+  //getchar();
+  
+  return sigmaG;
+  
+}
